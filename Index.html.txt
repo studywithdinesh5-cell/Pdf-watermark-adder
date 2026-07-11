@@ -1,0 +1,186 @@
+
+
+
+<!DOCTYPE html>
+<html lang="ta">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PDF இமேஜ் வாட்டர்மார்க் செயலி</title>
+    <script src="https://unpkg.com/pdf-lib@1.17.1/dist/pdf-lib.min.js"></script>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #e9f0f3;
+            margin: 0;
+            padding: 20px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+        }
+        .container {
+            background-color: white;
+            padding: 30px;
+            border-radius: 15px;
+            box-shadow: 0 6px 20px rgba(0,0,0,0.1);
+            max-width: 500px;
+            width: 100%;
+            text-align: center;
+        }
+        h2 {
+            color: #2c3e50;
+            margin-bottom: 25px;
+            font-size: 24px;
+        }
+        .form-group {
+            margin-bottom: 20px;
+            text-align: left;
+        }
+        label {
+            display: block;
+            margin-bottom: 10px;
+            font-weight: bold;
+            color: #4a4a4a;
+        }
+        input[type="file"] {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #ddd;
+            border-radius: 8px;
+            box-sizing: border-box;
+            background-color: #fcfcfc;
+            cursor: pointer;
+        }
+        button {
+            background-color: #e67e22;
+            color: white;
+            padding: 15px 25px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 18px;
+            width: 100%;
+            font-weight: bold;
+            transition: background 0.3s;
+            margin-top: 10px;
+        }
+        button:hover {
+            background-color: #d35400;
+        }
+        button:disabled {
+            background-color: #bdc3c7;
+            cursor: not-allowed;
+        }
+        #status {
+            margin-top: 20px;
+            font-weight: bold;
+            color: #34495e;
+            padding: 10px;
+            border-radius: 5px;
+        }
+        .success { color: #27ae60; background-color: #e8f8f5; }
+        .error { color: #c0392b; background-color: #fadbd8; }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <h2>PDF இமேஜ் வாட்டர்மார்க் 🖼️</h2>
+    
+    <div class="form-group">
+        <label for="pdfFile">1. PDF ஃபைலைத் தேர்ந்தெடுக்கவும்:</label>
+        <input type="file" id="pdfFile" accept=".pdf">
+    </div>
+
+    <div class="form-group">
+        <label for="imageFile">2. வாட்டர்மார்க் இமேஜைத் தேர்ந்தெடுக்கவும் (PNG/JPG):</label>
+        <input type="file" id="imageFile" accept=".png, .jpg, .jpeg">
+    </div>
+
+    <button onclick="addImageWatermark()" id="processBtn">வாட்டர்மார்க் சேர்த்து டவுன்லோட் செய்</button>
+
+    <div id="status"></div>
+</div>
+
+<script>
+    async function addImageWatermark() {
+        const pdfInput = document.getElementById('pdfFile');
+        const imageInput = document.getElementById('imageFile');
+        const statusDiv = document.getElementById('status');
+        const btn = document.getElementById('processBtn');
+
+        if (pdfInput.files.length === 0) {
+            statusDiv.innerHTML = "தயவுசெய்து ஒரு PDF ஃபைலைத் தேர்ந்தெடுக்கவும்!";
+            statusDiv.className = 'error';
+            return;
+        }
+        if (imageInput.files.length === 0) {
+            statusDiv.innerHTML = "வாட்டர்மார்க் இமேஜைத் தேர்ந்தெடுக்கவும்!";
+            statusDiv.className = 'error';
+            return;
+        }
+
+        statusDiv.innerText = "Processing... தயவுசெய்து காத்திருக்கவும்...";
+        statusDiv.className = '';
+        btn.disabled = true;
+
+        try {
+            const pdfFile = pdfInput.files[0];
+            const imageFile = imageInput.files[0];
+
+            const pdfArrayBuffer = await pdfFile.arrayBuffer();
+            const imageArrayBuffer = await imageFile.arrayBuffer();
+
+            const pdfDoc = await PDFLib.PDFDocument.load(pdfArrayBuffer);
+            
+            let waterMarkImage;
+            if (imageFile.type === 'image/jpeg' || imageFile.type === 'image/jpg') {
+                waterMarkImage = await pdfDoc.embedJpg(imageArrayBuffer);
+            } else if (imageFile.type === 'image/png') {
+                waterMarkImage = await pdfDoc.embedPng(imageArrayBuffer);
+            } else {
+                throw new Error("தவறான இமேஜ் வகை (JPG/PNG மட்டும்)");
+            }
+
+            const pages = pdfDoc.getPages();
+            
+            // இமேஜ் அளவை 0.35 (35%) ஆகக் குறைத்துள்ளேன்
+            const imageDims = waterMarkImage.scale(0.35); 
+
+            for (let i = 0; i < pages.length; i++) {
+                const page = pages[i];
+                const { width, height } = page.getSize();
+
+                page.drawImage(waterMarkImage, {
+                    x: width / 2 - imageDims.width / 2, 
+                    y: height / 2 - imageDims.height / 2,
+                    width: imageDims.width,
+                    height: imageDims.height,
+                    opacity: 0.15, // டிரான்ஸ்பரன்சி அளவை 0.15 ஆகக் குறைத்துள்ளேன் (மிகவும் லேசாகத் தெரியும்)
+                });
+            }
+
+            const pdfBytes = await pdfDoc.save();
+
+            const blob = new Blob([pdfBytes], { type: "application/pdf" });
+            const link = document.createElement('a');
+            link.href = URL.createObjectURL(blob);
+            link.download = "fixed_watermarked_" + pdfFile.name;
+            link.click();
+
+            statusDiv.innerHTML = "வெற்றிகரமாக வாட்டர்மார்க் சேர்க்கப்பட்டு டவுன்லோட் செய்யப்பட்டது! 🎉";
+            statusDiv.className = 'success';
+
+        } catch (error) {
+            console.error(error);
+            statusDiv.innerHTML = "ஏதோ தவறு நடந்துவிட்டது. மீண்டும் முயற்சிக்கவும்!";
+            statusDiv.className = 'error';
+        } finally {
+            btn.disabled = false;
+        }
+    }
+</script>
+
+</body>
+</html>
