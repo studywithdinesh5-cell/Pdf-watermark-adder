@@ -6,7 +6,7 @@
     <title>Flag War Battle - Live Stream</title>
     <style>
         /* ==========================================
-           1. PURE NATIVE CSS RESET & COSMIC THEME
+           1. NATIVE CSS RESET & 9:16 STREAM LAYOUT
            ========================================== */
         *, *::before, *::after {
             box-sizing: border-box;
@@ -30,7 +30,7 @@
             -webkit-user-select: none;
         }
 
-        /* 9:16 Vertical Stream Container */
+        /* Vertical 9:16 Container for Mobile & OBS */
         #appContainer {
             position: relative;
             width: 100%;
@@ -47,7 +47,7 @@
             box-shadow: 0 0 60px rgba(0, 0, 0, 0.95);
         }
 
-        /* Messi (Electric Blue) & Ronaldo (Fiery Red) Side Auras */
+        /* Electric Blue (Left) & Fiery Red (Right) Background Auras */
         .side-auras {
             position: absolute;
             inset: 0;
@@ -56,21 +56,20 @@
             z-index: 0;
         }
 
-        .aura-messi {
+        .aura-left {
             width: 50%;
             height: 100%;
-            background: radial-gradient(circle at 0% 35%, rgba(0, 180, 255, 0.32), transparent 68%);
-            box-shadow: inset 18px 0 45px rgba(0, 140, 255, 0.25);
+            background: radial-gradient(circle at 0% 38%, rgba(0, 180, 255, 0.34), transparent 68%);
+            box-shadow: inset 18px 0 48px rgba(0, 140, 255, 0.25);
         }
 
-        .aura-ronaldo {
+        .aura-right {
             width: 50%;
             height: 100%;
-            background: radial-gradient(circle at 100% 35%, rgba(255, 30, 65, 0.32), transparent 68%);
-            box-shadow: inset -18px 0 45px rgba(255, 20, 75, 0.25);
+            background: radial-gradient(circle at 100% 38%, rgba(255, 30, 65, 0.34), transparent 68%);
+            box-shadow: inset -18px 0 48px rgba(255, 20, 75, 0.25);
         }
 
-        /* Screen Shake Animation on Elimination */
         @keyframes arenaShake {
             0%, 100% { transform: translate(0, 0); }
             20% { transform: translate(-5px, 4px); }
@@ -83,18 +82,18 @@
         }
 
         /* ==========================================
-           2. HEADER BAR & TOP HUD BANNER
+           2. TOP HEADER & LIVE HUD
            ========================================== */
         .header-bar {
             position: relative;
             z-index: 10;
-            padding: 8px 10px 4px 10px;
+            padding: 8px 10px 5px 10px;
             display: flex;
             align-items: center;
             justify-content: space-between;
             gap: 4px;
-            background: rgba(2, 6, 23, 0.75);
-            border-bottom: 1px solid rgba(56, 189, 248, 0.2);
+            background: rgba(2, 6, 23, 0.82);
+            border-bottom: 1px solid rgba(56, 189, 248, 0.22);
         }
 
         .brand-box {
@@ -128,7 +127,7 @@
         }
 
         .timer-badge {
-            background: rgba(127, 29, 29, 0.9);
+            background: rgba(127, 29, 29, 0.92);
             border: 1.5px solid #ef4444;
             color: #facc15;
             font-size: 13px;
@@ -153,11 +152,10 @@
         .ctrl-btn:active { transform: scale(0.93); }
         .ctrl-btn.music {
             border-color: #a855f7;
-            background: rgba(88, 28, 135, 0.75);
+            background: rgba(88, 28, 135, 0.78);
             color: #f3e8ff;
         }
 
-        /* Top HUD Banner */
         .hud-banner {
             position: relative;
             z-index: 10;
@@ -171,7 +169,7 @@
             text-align: center;
             font-size: 15px;
             font-weight: 900;
-            letter-spacing: 0.8px;
+            letter-spacing: 0.7px;
             color: #ffffff;
             text-shadow: 0 0 12px rgba(34, 211, 238, 0.75);
         }
@@ -191,7 +189,7 @@
             align-items: center;
             justify-content: space-between;
             gap: 6px;
-            background: rgba(15, 23, 42, 0.78);
+            background: rgba(15, 23, 42, 0.82);
             border: 1px solid rgba(148, 163, 184, 0.25);
             border-radius: 12px;
             padding: 5px 8px;
@@ -200,7 +198,7 @@
         .target-lock {
             font-size: 11px;
             font-weight: 800;
-            color: #fca5a5;
+            color: #cbd5e1;
             white-space: nowrap;
             overflow: hidden;
             text-overflow: ellipsis;
@@ -228,10 +226,9 @@
         .btn-cyan { background: #0284c7; }
         .btn-emerald { background: #059669; }
 
-        /* Live Chat Simulation Ticker */
         #chatTicker {
             height: 22px;
-            background: rgba(2, 6, 23, 0.75);
+            background: rgba(2, 6, 23, 0.78);
             border-radius: 8px;
             padding: 0 8px;
             display: flex;
@@ -240,11 +237,11 @@
             overflow: hidden;
             white-space: nowrap;
             text-overflow: ellipsis;
-            border: 1px solid rgba(56, 189, 248, 0.18);
+            border: 1px solid rgba(56, 189, 248, 0.2);
         }
 
         /* ==========================================
-           3. CENTRAL CIRCULAR ARENA & OVERLAYS
+           3. CENTRAL ARENA & ALERT BANNERS
            ========================================== */
         .arena-stage {
             position: relative;
@@ -275,7 +272,7 @@
             touch-action: none;
         }
 
-        /* 1.0-Second Center Elimination Popup Banner */
+        /* 1.0-Second Center-Touch Elimination Alert */
         #elimBanner {
             position: absolute;
             left: 8px;
@@ -297,6 +294,34 @@
             animation: popScale 0.14s ease-out;
         }
 
+        /* Safe Round Pulse Banner (When NO flag touches center at 0.00s) */
+        #safeBanner {
+            position: absolute;
+            left: 24px;
+            right: 24px;
+            top: 16%;
+            z-index: 24;
+            display: none;
+            pointer-events: none;
+        }
+
+        .safe-box {
+            background: rgba(6, 78, 59, 0.92);
+            border: 2px solid #34d399;
+            border-radius: 14px;
+            padding: 8px 12px;
+            text-align: center;
+            box-shadow: 0 0 24px rgba(52, 211, 153, 0.7);
+            animation: popScale 0.16s ease-out;
+        }
+
+        .safe-title {
+            font-size: 13px;
+            font-weight: 900;
+            color: #a7f3d0;
+            letter-spacing: 0.6px;
+        }
+
         @keyframes popScale {
             from { transform: scale(0.84); opacity: 0; }
             to { transform: scale(1); opacity: 1; }
@@ -311,7 +336,7 @@
         }
 
         .elim-main {
-            font-size: 21px;
+            font-size: 20px;
             font-weight: 900;
             color: #fde047;
             margin: 5px 0;
@@ -335,7 +360,7 @@
         }
 
         /* ==========================================
-           4. BOTTOM INTERACTIVE CHAT & COMMAND BAR
+           4. BOTTOM AUDIENCE CHAT & COMMANDS
            ========================================== */
         .bottom-controls {
             position: relative;
@@ -473,7 +498,7 @@
         }
 
         /* ==========================================
-           6. CUSTOM MUSIC MODAL (iOS GAINNODE VOLUME FIX)
+           6. CUSTOM MUSIC MODAL (WEB AUDIO GAINNODE)
            ========================================== */
         #musicModal {
             position: absolute;
@@ -618,13 +643,13 @@
 <body>
 
     <div id="appContainer">
-        <!-- Messi (Blue) & Ronaldo (Red) Side Lighting Auras -->
+        <!-- Electric Blue & Fiery Red Side Auras -->
         <div class="side-auras">
-            <div class="aura-messi"></div>
-            <div class="aura-ronaldo"></div>
+            <div class="aura-left"></div>
+            <div class="aura-right"></div>
         </div>
 
-        <!-- 1. HEADER BAR -->
+        <!-- 1. TOP HEADER BAR -->
         <header class="header-bar">
             <div class="brand-box">
                 <div class="brand-title">FLAG WAR BATTLE</div>
@@ -638,25 +663,25 @@
             </div>
         </header>
 
-        <!-- 2. TOP HUD BANNER & LIVE CHAT TICKER -->
+        <!-- 2. LIVE HUD & AUDIENCE CHAT TICKER -->
         <section class="hud-banner">
             <div class="banner-headline">
-                WHERE ARE YOU FROM? <span class="live-tag">LIVE ELIMINATION</span>
+                WHERE ARE YOU FROM? <span class="live-tag">CENTER STRIKE</span>
             </div>
 
             <div class="hud-sub-row">
                 <div class="target-lock">
-                    🎯 Danger: <strong id="dangerName">Scanning...</strong>
+                    🎯 Center Zone: <strong id="dangerName">Clear (Safe)</strong>
                 </div>
                 <div class="quick-hud-btns">
-                    <button id="quickShieldBtn" class="mini-support-btn btn-cyan">🛡️ Shield Random</button>
-                    <button id="quickBoostBtn" class="mini-support-btn btn-emerald">⚡ Boost Random</button>
+                    <button id="quickShieldBtn" class="mini-support-btn btn-cyan">🛡️ Shield</button>
+                    <button id="quickBoostBtn" class="mini-support-btn btn-emerald">⚡ Boost</button>
                 </div>
             </div>
 
             <div id="chatTicker">
                 <span style="color:#38bdf8;font-weight:800;margin-right:6px;">LiveChat:</span>
-                <span style="color:#e2e8f0;">Type your country below to give it a Shield or Boost!</span>
+                <span style="color:#e2e8f0;">Only flags touching the golden center circle at 0.00s get eliminated!</span>
             </div>
         </section>
 
@@ -665,10 +690,17 @@
             <div class="canvas-box">
                 <canvas id="arenaCanvas" width="400" height="400"></canvas>
 
-                <!-- 1.0-Second Elimination Banner -->
+                <!-- Safe Round Status Pulse (when no flag touches center at 0.00s) -->
+                <div id="safeBanner">
+                    <div class="safe-box">
+                        <div class="safe-title">🛡️ SAFE! NO FLAG IN CENTER</div>
+                    </div>
+                </div>
+
+                <!-- 1.0-Second Center-Touch Elimination Alert -->
                 <div id="elimBanner">
                     <div class="elim-box">
-                        <div class="elim-label">💥 CENTER CORE STRIKE 💥</div>
+                        <div class="elim-label">💥 CENTER CIRCLE ELIMINATION 💥</div>
                         <div id="elimText" class="elim-main">ELIMINATED: 🏳️ NATION</div>
                         <div class="bar-bg">
                             <div id="elimBarFill" class="bar-fill-red"></div>
@@ -681,7 +713,7 @@
         <!-- 4. BOTTOM INTERACTIVE COMMANDS -->
         <footer class="bottom-controls">
             <div class="cmd-row">
-                <input id="countryInput" type="text" placeholder="Enter country name (e.g. India, Brazil, Japan)...">
+                <input id="countryInput" type="text" placeholder="Type country name (e.g. India, Brazil, Japan)...">
                 <button id="sendShieldBtn" class="cmd-btn btn-cyan">🛡️ Shield</button>
                 <button id="sendBoostBtn" class="cmd-btn btn-emerald">⚡ Boost</button>
             </div>
@@ -694,7 +726,7 @@
             </div>
         </footer>
 
-        <!-- 5. 3-SECOND CHAMPION AUTO-RESTART OVERLAY -->
+        <!-- 5. 10-SECOND CHAMPION SHOWCASE & AUTO-RESTART OVERLAY -->
         <div id="championOverlay">
             <div class="crown-anim">👑</div>
             <div class="champ-tag">ULTIMATE CHAMPION</div>
@@ -703,7 +735,7 @@
             <p style="font-size:12px;color:#cbd5e1;margin-top:4px;">Last country surviving in the arena!</p>
 
             <div class="restart-card">
-                <div id="restartText">Next Round Starts in 3.0s...</div>
+                <div id="restartText">Next Round Starts in 10.0s...</div>
                 <div class="bar-bg">
                     <div id="restartBarFill" class="bar-fill-gold"></div>
                 </div>
@@ -723,7 +755,7 @@
                     <input type="file" id="audioFileInput" accept=".m4a,audio/mp4,audio/x-m4a,.mp3,.wav,.aac,.ogg,audio/*">
                 </label>
 
-                <div id="activeTrackName" class="track-status">Now Playing: Default Synth Beat</div>
+                <div id="activeTrackName" class="track-status">Now Playing: Default Synthwave BGM</div>
 
                 <div class="mode-row">
                     <button id="modeDefaultBtn" class="mode-btn active">Default Synth</button>
@@ -748,19 +780,17 @@
             </div>
         </div>
 
-        <!-- Hidden HTML5 Audio Element Routed Through Web Audio GainNode -->
+        <!-- HTML5 Audio Element Routed Through Web Audio GainNode -->
         <audio id="bgAudioElement" preload="auto" playsinline></audio>
     </div>
 
     <script>
         /* ==========================================================================
-           SECTION 1: WEB AUDIO ENGINE & TRUE iOS/MOBILE VOLUME GAIN PIPELINE
+           SECTION 1: WEB AUDIO ENGINE & GAINNODE VOLUME PIPELINE (iOS & DESKTOP)
            ========================================================================== */
         let audioCtx = null;
         let sfxEnabled = true;
 
-        // GainNode controls BOTH custom <audio> element & procedural synth beat
-        // This guarantees smooth volume reduction (0% - 100%) on iOS Safari where audio.volume is read-only!
         let masterMusicGain = null;
         let mediaSourceNode = null;
         const bgAudioEl = document.getElementById('bgAudioElement');
@@ -768,7 +798,7 @@
         let musicMode = 'default'; // 'default' | 'custom'
         let customFileLoaded = false;
         let isMusicPlaying = false;
-        let currentMusicVolume = 0.65; // Default 65%
+        let currentMusicVolume = 0.65;
         let synthInterval = null;
         let synthStep = 0;
 
@@ -778,18 +808,14 @@
                 if (AudioContextClass) {
                     audioCtx = new AudioContextClass();
 
-                    // Master GainNode for Music
                     masterMusicGain = audioCtx.createGain();
                     masterMusicGain.gain.setValueAtTime(currentMusicVolume, audioCtx.currentTime);
                     masterMusicGain.connect(audioCtx.destination);
 
-                    // Connect HTML5 <audio> element into Web Audio GainNode once
                     try {
                         mediaSourceNode = audioCtx.createMediaElementSource(bgAudioEl);
                         mediaSourceNode.connect(masterMusicGain);
-                    } catch (err) {
-                        // Fallback if already connected
-                    }
+                    } catch (err) {}
                 }
             }
             if (audioCtx && audioCtx.state === 'suspended') {
@@ -800,24 +826,19 @@
 
         function applyMusicVolume(normalizedVal) {
             currentMusicVolume = Math.max(0, Math.min(1, normalizedVal));
-
-            // 1. Update Web Audio GainNode (Works on iOS Safari, Chrome, Android, Desktop)
             if (masterMusicGain && audioCtx) {
                 masterMusicGain.gain.setTargetAtTime(currentMusicVolume, audioCtx.currentTime, 0.015);
             }
-
-            // 2. Also update native HTMLMediaElement.volume as secondary layer on Desktop
             try {
                 bgAudioEl.volume = currentMusicVolume;
             } catch (e) {}
         }
 
-        // Unlock Web Audio on first user interaction anywhere
         window.addEventListener('pointerdown', () => {
             initAudioPipeline();
         }, { once: true });
 
-        // Procedural Synthwave Beat (routed through masterMusicGain)
+        // Procedural Synthwave BGM
         const SYNTH_BASS = [110, 110, 130.81, 110, 146.83, 110, 130.81, 123.47, 98, 98, 123.47, 98, 130.81, 98, 110, 82.41];
         const SYNTH_ARP = [440, 523.25, 659.25, 880, 523.25, 659.25, 783.99, 659.25, 392, 493.88, 587.33, 783.99, 493.88, 587.33, 659.25, 523.25];
 
@@ -825,7 +846,6 @@
             if (!audioCtx || !masterMusicGain || !isMusicPlaying || musicMode !== 'default') return;
             const now = audioCtx.currentTime;
 
-            // Kick on every 4th 16th-note
             if (synthStep % 4 === 0) {
                 const kick = audioCtx.createOscillator();
                 const kGain = audioCtx.createGain();
@@ -839,7 +859,6 @@
                 kick.stop(now + 0.13);
             }
 
-            // Melodic Arp on every 2nd step
             if (synthStep % 2 === 0) {
                 const arp = audioCtx.createOscillator();
                 const aGain = audioCtx.createGain();
@@ -853,7 +872,6 @@
                 arp.stop(now + 0.14);
             }
 
-            // Bassline
             const bass = audioCtx.createOscillator();
             const bGain = audioCtx.createGain();
             bass.type = 'sawtooth';
@@ -899,7 +917,6 @@
             document.getElementById('musicPlayPauseBtn').innerText = '▶️ Play Music';
         }
 
-        // Custom File Upload (.m4a, .mp3, .wav, etc.)
         document.getElementById('audioFileInput').addEventListener('change', (e) => {
             const file = e.target.files[0];
             if (!file) return;
@@ -924,7 +941,7 @@
 
         document.getElementById('modeDefaultBtn').addEventListener('click', () => {
             musicMode = 'default';
-            document.getElementById('activeTrackName').innerText = 'Now Playing: Default Synth Beat';
+            document.getElementById('activeTrackName').innerText = 'Now Playing: Default Synthwave BGM';
             document.getElementById('modeDefaultBtn').classList.add('active');
             document.getElementById('modeCustomBtn').classList.remove('active');
             if (isMusicPlaying) startMusic();
@@ -940,7 +957,6 @@
             if (isMusicPlaying) startMusic();
         });
 
-        // Real-Time Volume Slider (0% - 100%)
         document.getElementById('volSlider').addEventListener('input', (e) => {
             initAudioPipeline();
             const pct = parseInt(e.target.value, 10);
@@ -966,7 +982,7 @@
             document.getElementById('musicModal').style.display = 'none';
         });
 
-        // Procedural Sound Effects (Beeps, Explosions, Shields, Fanfare)
+        // Synthesized Sound Effects
         function playSfxTone(freq, type = 'sine', duration = 0.08, volume = 0.14) {
             if (!sfxEnabled) return;
             try {
@@ -986,6 +1002,10 @@
         }
 
         const playCountdownBeep = (urgent) => playSfxTone(urgent ? 1240 : 820, urgent ? 'square' : 'sine', 0.06, urgent ? 0.15 : 0.11);
+        const playSafeChime = () => {
+            playSfxTone(587.33, 'sine', 0.09, 0.12);
+            setTimeout(() => playSfxTone(880, 'sine', 0.15, 0.12), 60);
+        };
         const playShieldSfx = () => {
             playSfxTone(480, 'sine', 0.08, 0.15);
             setTimeout(() => playSfxTone(860, 'sine', 0.14, 0.15), 50);
@@ -1025,7 +1045,7 @@
         });
 
         /* ==========================================================================
-           SECTION 2: 48 NATIONS DATABASE & PROCEDURAL VECTOR FLAGS
+           SECTION 2: 48 COUNTRIES & PROCEDURAL VECTOR FLAGS
            ========================================================================== */
         const COUNTRIES = [
             { code: "IND", name: "India", flag: "🇮🇳", type: "india", p: "#FF9933", s: "#138808" },
@@ -1270,7 +1290,7 @@
                     break;
             }
 
-            // Glossy 3D Marble Sphere Shading
+            // 3D Marble Sphere Shading
             const gloss = ctx.createLinearGradient(-r, -r, r, r);
             gloss.addColorStop(0, "rgba(255,255,255,0.60)");
             gloss.addColorStop(0.32, "rgba(255,255,255,0.08)");
@@ -1285,7 +1305,7 @@
         }
 
         /* ==========================================================================
-           SECTION 3: ARENA GEOMETRY, PHYSICS & TIMERS
+           SECTION 3: ARENA GEOMETRY, PHYSICS & STRICT CENTER-TOUCH ELIMINATION
            ========================================================================== */
         const canvas = document.getElementById('arenaCanvas');
         const ctx = canvas.getContext('2d');
@@ -1294,15 +1314,15 @@
         const CX = SIZE / 2;
         const CY = SIZE / 2;
         const OUTER_R = 186;
-        const DANGER_R = 48;
-        const FLAG_R = 15.5;
+        const DANGER_R = 46;  // Golden Center Circle Radius (~46px)
+        const FLAG_R = 15.5;  // Flag Marble Radius (15.5px)
 
-        // 6 Purple Radial Obstacle Bars projecting inward from perimeter
+        // 6 Inward-Pointing Purple Obstacle Bars
         const PURPLE_BARS = [];
         for (let i = 0; i < 6; i++) {
             const ang = (i / 6) * Math.PI * 2 + 0.26;
             const rStart = OUTER_R - 7;
-            const rEnd = OUTER_R - 78;
+            const rEnd = OUTER_R - 76;
             PURPLE_BARS.push({
                 x1: CX + Math.cos(ang) * rStart,
                 y1: CY + Math.sin(ang) * rStart,
@@ -1327,7 +1347,11 @@
         let popupActive = false;
         let popupTimer = 0;
 
-        const CHAMPION_DURATION = 3.0;
+        const SAFE_POPUP_DURATION = 1.1;
+        let safePopupActive = false;
+        let safePopupTimer = 0;
+
+        const CHAMPION_DURATION = 10.0;
         let champActive = false;
         let champTimer = 0;
 
@@ -1345,14 +1369,18 @@
             popupTimer = 0;
             document.getElementById('elimBanner').style.display = 'none';
 
+            safePopupActive = false;
+            safePopupTimer = 0;
+            document.getElementById('safeBanner').style.display = 'none';
+
             champActive = false;
             champTimer = 0;
             document.getElementById('championOverlay').style.display = 'none';
 
             COUNTRIES.forEach((country, idx) => {
                 const angle = (idx / COUNTRIES.length) * Math.PI * 2;
-                const dist = 65 + Math.random() * (OUTER_R - 92);
-                const speed = 0.70 + Math.random() * 0.60;
+                const dist = 68 + Math.random() * (OUTER_R - 95);
+                const speed = 0.72 + Math.random() * 0.58;
                 const dir = Math.random() * Math.PI * 2;
 
                 balls.push({
@@ -1382,8 +1410,22 @@
             return { x: a.x + abx * t, y: a.y + aby * t };
         }
 
+        // Helper: Return balls physically touching or inside the golden center danger circle
+        function getCenterTouchingBalls() {
+            const touching = [];
+            for (let i = 0; i < balls.length; i++) {
+                const b = balls[i];
+                const d = Math.hypot(b.x - CX, b.y - CY);
+                if (d <= DANGER_R + b.r) {
+                    touching.push({ ball: b, dist: d });
+                }
+            }
+            touching.sort((a, b) => a.dist - b.dist);
+            return touching;
+        }
+
         function stepPhysics(dt) {
-            // 1. 3-Second Champion Showcase & Auto-Restart Loop
+            // 1. 10-Second Champion Celebration & Automatic Continuous Restart Loop
             if (champActive) {
                 champTimer -= dt;
                 const pct = Math.max(0, (champTimer / CHAMPION_DURATION) * 100);
@@ -1398,7 +1440,7 @@
 
             if (isPaused || balls.length <= 1) return;
 
-            // 2. 1-Second Elimination Banner Countdown
+            // 2. 1.0-Second Elimination Banner Countdown
             if (popupActive) {
                 popupTimer -= dt;
                 const pct = Math.max(0, (popupTimer / POPUP_DURATION) * 100);
@@ -1410,7 +1452,16 @@
                 }
             }
 
-            // 3. 5.00s Elimination Countdown
+            // Safe Banner Countdown
+            if (safePopupActive) {
+                safePopupTimer -= dt;
+                if (safePopupTimer <= 0) {
+                    safePopupActive = false;
+                    document.getElementById('safeBanner').style.display = 'none';
+                }
+            }
+
+            // 3. 5.00s Countdown Timer
             roundTimer -= dt;
             if (roundTimer < 0) roundTimer = 0;
 
@@ -1420,24 +1471,26 @@
                 playCountdownBeep(secCeil === 1);
             }
 
-            // Find single active ball closest to golden center circle
-            let closest = null;
-            let minDist = Infinity;
-            for (let i = 0; i < balls.length; i++) {
-                const d = Math.hypot(balls[i].x - CX, balls[i].y - CY);
-                if (d < minDist) {
-                    minDist = d;
-                    closest = balls[i];
-                }
+            // Check flags touching or overlapping the golden center circle
+            const touchingList = getCenterTouchingBalls();
+            const dangerTarget = touchingList.length > 0 ? touchingList[0].ball : null;
+
+            const dangerLabel = document.getElementById('dangerName');
+            if (dangerTarget) {
+                dangerLabel.innerText = `${dangerTarget.country.flag} ${dangerTarget.country.name} (IN ZONE!)`;
+                dangerLabel.style.color = "#f87171";
+            } else {
+                dangerLabel.innerText = "Clear (Safe)";
+                dangerLabel.style.color = "#34d399";
             }
 
-            if (closest) {
-                document.getElementById('dangerName').innerText = `${closest.country.flag} ${closest.country.name}`;
-            }
-
-            // Trigger strict 1-country elimination at 0.00s
+            // At 0.00s: Eliminate ONLY if a flag is touching/inside the golden center circle!
             if (roundTimer <= 0) {
-                eliminateSingleCountry(closest);
+                if (dangerTarget) {
+                    eliminateSingleCountry(dangerTarget);
+                } else {
+                    triggerSafeRound();
+                }
                 roundTimer = ELIM_INTERVAL;
                 lastBeepSec = 5;
             }
@@ -1447,29 +1500,29 @@
                 const b = balls[i];
                 if (b.shield > 0) b.shield = Math.max(0, b.shield - dt);
 
-                // Subtle gentle pull toward center so flags orbit smoothly
+                // Subtle gentle drift toward center so flags pass through periodically
                 const dx = CX - b.x;
                 const dy = CY - b.y;
                 const dist = Math.hypot(dx, dy) || 1;
-                b.vx += (dx / dist) * 0.22 * dt;
-                b.vy += (dy / dist) * 0.22 * dt;
+                b.vx += (dx / dist) * 0.20 * dt;
+                b.vy += (dy / dist) * 0.20 * dt;
 
-                // Velocity cap between 0.5 and 1.6 px/frame
-                b.vx *= 0.994;
-                b.vy *= 0.994;
+                // Calm velocity cap (0.55 to 1.55 px/frame)
+                b.vx *= 0.995;
+                b.vy *= 0.995;
                 const spd = Math.hypot(b.vx, b.vy);
-                if (spd > 1.6) {
-                    b.vx = (b.vx / spd) * 1.6;
-                    b.vy = (b.vy / spd) * 1.6;
-                } else if (spd < 0.5) {
-                    b.vx = (b.vx / (spd || 1)) * 0.5;
-                    b.vy = (b.vy / (spd || 1)) * 0.5;
+                if (spd > 1.55) {
+                    b.vx = (b.vx / spd) * 1.55;
+                    b.vy = (b.vy / spd) * 1.55;
+                } else if (spd < 0.55) {
+                    b.vx = (b.vx / (spd || 1)) * 0.55;
+                    b.vy = (b.vy / (spd || 1)) * 0.55;
                 }
 
                 b.x += b.vx * 60 * dt;
                 b.y += b.vy * 60 * dt;
 
-                // Outer Neon Circle Containment
+                // Outer Neon Cyan Circle Containment
                 const dCenter = Math.hypot(b.x - CX, b.y - CY);
                 const maxAllowed = OUTER_R - b.r;
                 if (dCenter > maxAllowed) {
@@ -1478,8 +1531,8 @@
                     b.x = CX - nx * maxAllowed;
                     b.y = CY - ny * maxAllowed;
                     const dot = b.vx * nx + b.vy * ny;
-                    b.vx = (b.vx - 2 * dot * nx) * 0.9;
-                    b.vy = (b.vy - 2 * dot * ny) * 0.9;
+                    b.vx = (b.vx - 2 * dot * nx) * 0.92;
+                    b.vy = (b.vy - 2 * dot * ny) * 0.92;
                 }
 
                 // 6 Purple Radial Obstacle Bars Elastic Bounce
@@ -1494,12 +1547,12 @@
                         b.x = cp.x + nx * minSep;
                         b.y = cp.y + ny * minSep;
                         const dot = b.vx * nx + b.vy * ny;
-                        b.vx = (b.vx - 2 * dot * nx) * 0.9;
-                        b.vy = (b.vy - 2 * dot * ny) * 0.9;
+                        b.vx = (b.vx - 2 * dot * nx) * 0.92;
+                        b.vy = (b.vy - 2 * dot * ny) * 0.92;
                     }
                 }
 
-                // Ball-to-Ball Smooth Elastic Collisions
+                // Ball-to-Ball Elastic Collisions
                 for (let j = i + 1; j < balls.length; j++) {
                     const b2 = balls[j];
                     const cdx = b2.x - b.x;
@@ -1527,7 +1580,7 @@
                 }
             }
 
-            // Update Explosion Particles & Shockwaves
+            // Update Particles & Shockwaves
             for (let i = particles.length - 1; i >= 0; i--) {
                 const p = particles[i];
                 p.x += p.vx * 60 * dt;
@@ -1544,10 +1597,19 @@
             }
         }
 
+        function triggerSafeRound() {
+            playSafeChime();
+            shockwaves.push({ x: CX, y: CY, r: DANGER_R, spd: 3.5, color: '#34d399', alpha: 0.9 });
+            document.getElementById('safeBanner').style.display = 'block';
+            safePopupActive = true;
+            safePopupTimer = SAFE_POPUP_DURATION;
+            updateChatTicker("Referee", "🛡️ SAFE! No flag touched the center circle at 0.00s!");
+        }
+
         function eliminateSingleCountry(target) {
             if (!target || balls.length <= 1) return;
 
-            // Active Shield protects the country once and repels it outward
+            // Active Shield protects the country once and bounces it out of the center circle
             if (target.shield > 0) {
                 target.shield = 0;
                 const ang = Math.atan2(target.y - CY, target.x - CX);
@@ -1555,7 +1617,7 @@
                 target.vy = Math.sin(ang) * 2.8;
                 playShieldSfx();
                 shockwaves.push({ x: target.x, y: target.y, r: 8, spd: 5.5, color: '#22d3ee', alpha: 1 });
-                updateChatTicker("System", `🛡️ ${target.country.flag} ${target.country.name}'s Shield deflected the strike!`);
+                updateChatTicker("System", `🛡️ ${target.country.flag} ${target.country.name}'s Shield deflected the center strike!`);
                 return;
             }
 
@@ -1564,7 +1626,7 @@
                 balls.splice(idx, 1);
             }
 
-            // Screen Shake + Bass Thump + Particles
+            // Screen Shake + Explosion Particles + Bass FX
             const appEl = document.getElementById('appContainer');
             appEl.classList.add('shake');
             setTimeout(() => appEl.classList.remove('shake'), 350);
@@ -1586,7 +1648,7 @@
             shockwaves.push({ x: target.x, y: target.y, r: 8, spd: 5.5, color: '#ef4444', alpha: 1 });
             shockwaves.push({ x: CX, y: CY, r: 10, spd: 4.5, color: '#facc15', alpha: 1 });
 
-            // 1.0-Second Elimination Popup Banner
+            // 1.0-Second Red Alert Banner
             document.getElementById('elimText').innerText = `ELIMINATED: ${target.country.flag} ${target.country.name}`;
             document.getElementById('elimBarFill').style.width = '100%';
             document.getElementById('elimBanner').style.display = 'block';
@@ -1606,7 +1668,7 @@
             document.getElementById('champFlag').innerText = winner.country.flag;
             document.getElementById('champName').innerText = winner.country.name;
             document.getElementById('restartBarFill').style.width = '100%';
-            document.getElementById('restartText').innerText = 'Next Round Starts in 3.0s...';
+            document.getElementById('restartText').innerText = 'Next Round Starts in 10.0s...';
             document.getElementById('championOverlay').style.display = 'flex';
 
             champActive = true;
@@ -1619,7 +1681,7 @@
         function drawArena() {
             ctx.clearRect(0, 0, SIZE, SIZE);
 
-            // 1. Large Enclosed Neon Cyan Outer Circle
+            // 1. Enclosed Neon Cyan Outer Circle
             ctx.save();
             ctx.beginPath();
             ctx.arc(CX, CY, OUTER_R, 0, Math.PI * 2);
@@ -1632,19 +1694,24 @@
             ctx.stroke();
             ctx.restore();
 
-            // 2. Glowing Golden Inner Ring (Danger Core)
+            // Check flags touching the golden center circle
+            const touchingList = getCenterTouchingBalls();
+            const hasDangerTouch = touchingList.length > 0;
+            const primaryTarget = hasDangerTouch ? touchingList[0].ball : null;
+
+            // 2. Prominent Golden-Rimmed Center Danger Circle
             ctx.save();
             ctx.beginPath();
             ctx.arc(CX, CY, DANGER_R, 0, Math.PI * 2);
-            ctx.fillStyle = "rgba(49, 46, 129, 0.65)";
+            ctx.fillStyle = hasDangerTouch ? "rgba(185, 28, 28, 0.45)" : "rgba(49, 46, 129, 0.65)";
             ctx.fill();
             ctx.lineWidth = 4;
-            ctx.strokeStyle = "#facc15";
-            ctx.shadowColor = "#eab308";
-            ctx.shadowBlur = 14;
+            ctx.strokeStyle = hasDangerTouch ? "#ef4444" : "#facc15";
+            ctx.shadowColor = hasDangerTouch ? "#ef4444" : "#eab308";
+            ctx.shadowBlur = 15;
             ctx.stroke();
 
-            // Subtle rotating radar crosshairs inside Danger Core
+            // Subtle rotating radar crosshairs inside Center Circle
             const rot = performance.now() * 0.0008;
             ctx.lineWidth = 1;
             ctx.strokeStyle = "rgba(250, 204, 21, 0.25)";
@@ -1657,7 +1724,7 @@
             }
             ctx.restore();
 
-            // 3. 6 Purple Radial Obstacle Bars
+            // 3. 6 Inward-Pointing Purple Obstacle Bars
             for (let i = 0; i < PURPLE_BARS.length; i++) {
                 const bar = PURPLE_BARS[i];
                 ctx.save();
@@ -1699,47 +1766,24 @@
                 ctx.restore();
             });
 
-            // Identify closest ball for subtle danger indicator
-            let closest = null;
-            let minDist = Infinity;
-            for (let i = 0; i < balls.length; i++) {
-                const d = Math.hypot(balls[i].x - CX, balls[i].y - CY);
-                if (d < minDist) {
-                    minDist = d;
-                    closest = balls[i];
-                }
-            }
-
-            if (closest && roundTimer <= 2.5) {
-                ctx.save();
-                ctx.beginPath();
-                ctx.moveTo(CX, CY);
-                ctx.lineTo(closest.x, closest.y);
-                ctx.strokeStyle = "rgba(244, 63, 94, 0.55)";
-                ctx.lineWidth = 2;
-                ctx.setLineDash([4, 4]);
-                ctx.stroke();
-                ctx.restore();
-            }
-
-            // 5. Render Flag Circles & Country Codes
+            // 5. Render Vector Flag Marbles & Country Codes
             for (let i = 0; i < balls.length; i++) {
                 const b = balls[i];
-                const isTarget = b === closest;
+                const isLockedTarget = b === primaryTarget;
 
                 ctx.save();
                 ctx.translate(b.x, b.y);
 
-                // Target ring highlight
-                if (isTarget) {
+                // Red Danger Lock Ring ONLY when touching center circle
+                if (isLockedTarget) {
                     ctx.beginPath();
-                    ctx.arc(0, 0, b.r + 3.5, 0, Math.PI * 2);
-                    ctx.strokeStyle = "#f43f5e";
-                    ctx.lineWidth = 2.2;
+                    ctx.arc(0, 0, b.r + 3.8, 0, Math.PI * 2);
+                    ctx.strokeStyle = "#ef4444";
+                    ctx.lineWidth = 2.4;
                     ctx.stroke();
                 }
 
-                // Shield aura
+                // Cyan Shield Aura
                 if (b.shield > 0) {
                     ctx.beginPath();
                     ctx.arc(0, 0, b.r + 4.5, 0, Math.PI * 2);
@@ -1750,21 +1794,20 @@
                     ctx.stroke();
                 }
 
-                // Crisp Vector Flag
                 drawFlagCircle(ctx, b.r, b.country);
 
-                // Marble Rim
+                // Outer Marble Rim
                 ctx.beginPath();
                 ctx.arc(0, 0, b.r, 0, Math.PI * 2);
                 ctx.lineWidth = 1.2;
-                ctx.strokeStyle = isTarget ? "#fb7185" : "rgba(255,255,255,0.85)";
+                ctx.strokeStyle = isLockedTarget ? "#fca5a5" : "rgba(255,255,255,0.85)";
                 ctx.stroke();
 
-                // Country 3-letter Code below ball
+                // 3-Letter Country Code Label
                 ctx.font = "800 7.5px sans-serif";
                 ctx.textAlign = "center";
                 ctx.textBaseline = "top";
-                ctx.fillStyle = "rgba(255, 255, 255, 0.88)";
+                ctx.fillStyle = "rgba(255, 255, 255, 0.9)";
                 ctx.fillText(b.country.code, 0, b.r + 2);
 
                 ctx.restore();
@@ -1772,7 +1815,7 @@
         }
 
         /* ==========================================================================
-           SECTION 5: AUDIENCE INTERACTION & LIVE CHAT SIMULATION
+           SECTION 5: LIVE AUDIENCE CHAT & INTERACTIVE CONTROLS
            ========================================================================== */
         const MOCK_VIEWERS = ["Arjun_YT", "Kavya_Live", "MessiFan10", "CR7_King", "TamilGamer", "Priya_99", "LankaStar", "SpeedFan", "Nila_YT"];
 
@@ -1805,7 +1848,7 @@
             }
         }
 
-        // Direct tap on canvas flag gives it a Shield
+        // Direct tap on any flag marble gives it a Shield
         canvas.addEventListener('pointerdown', (e) => {
             initAudioPipeline();
             const rect = canvas.getBoundingClientRect();
