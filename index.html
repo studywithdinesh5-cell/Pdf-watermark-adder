@@ -3,9 +3,11 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Flag War Battle - Live Stream Edition</title>
+    <title>Flag War Battle - Live Stream</title>
     <style>
-        /* Pure CSS Reset & Layout - Zero External Dependencies */
+        /* ==========================================
+           1. PURE NATIVE CSS RESET & COSMIC THEME
+           ========================================== */
         *, *::before, *::after {
             box-sizing: border-box;
             margin: 0;
@@ -15,72 +17,38 @@
 
         html, body {
             width: 100%;
+            height: 100dvh;
             min-height: 100vh;
-            background-color: #030712;
+            background-color: #02040a;
             color: #ffffff;
             font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
             display: flex;
-            flex-direction: column;
             align-items: center;
-            justify-content: flex-start;
-            overflow-x: hidden;
+            justify-content: center;
+            overflow: hidden;
             user-select: none;
             -webkit-user-select: none;
         }
 
-        /* Audio Unlock Banner */
-        #audioUnlockBanner {
-            width: 100%;
-            max-width: 430px;
-            margin: 8px 0 4px 0;
-            padding: 10px 14px;
-            border-radius: 14px;
-            background: linear-gradient(90deg, #f59e0b, #ef4444, #f59e0b);
-            color: #000000;
-            font-weight: 900;
-            font-size: 13px;
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            cursor: pointer;
-            box-shadow: 0 0 20px rgba(245, 158, 11, 0.7);
-            animation: bouncePulse 1.2s infinite ease-in-out;
-            z-index: 50;
-        }
-
-        .unmute-badge {
-            background: #000000;
-            color: #fde047;
-            padding: 3px 8px;
-            border-radius: 8px;
-            font-size: 10px;
-            letter-spacing: 1px;
-        }
-
-        @keyframes bouncePulse {
-            0%, 100% { transform: translateY(0); }
-            50% { transform: translateY(-3px); }
-        }
-
-        /* 9:16 Vertical Stream Frame */
-        #streamFrame {
+        /* 9:16 Vertical Stream Container */
+        #appContainer {
             position: relative;
             width: 100%;
-            max-width: 430px;
-            min-height: 92vh;
-            margin: 4px auto 12px auto;
-            border-radius: 24px;
-            overflow: hidden;
-            border: 2px solid #1e293b;
-            background: radial-gradient(circle at 50% 45%, #0f172a 0%, #020617 75%, #000000 100%);
-            box-shadow: 0 0 45px rgba(0, 0, 0, 0.95);
+            max-width: 480px;
+            height: 100dvh;
+            max-height: 920px;
+            background: radial-gradient(circle at 50% 48%, #0f172a 0%, #050814 68%, #010206 100%);
+            border-left: 1px solid #1e293b;
+            border-right: 1px solid #1e293b;
             display: flex;
             flex-direction: column;
             justify-content: space-between;
+            overflow: hidden;
+            box-shadow: 0 0 60px rgba(0, 0, 0, 0.95);
         }
 
-        /* Split Lightning Aura (Messi Left Blue / Ronaldo Right Red) */
-        .aura-layer {
+        /* Messi (Electric Blue) & Ronaldo (Fiery Red) Side Auras */
+        .side-auras {
             position: absolute;
             inset: 0;
             pointer-events: none;
@@ -88,263 +56,210 @@
             z-index: 0;
         }
 
-        .aura-left {
+        .aura-messi {
             width: 50%;
             height: 100%;
-            background: radial-gradient(circle at 10% 30%, rgba(0, 195, 255, 0.28), transparent 70%);
-            box-shadow: inset 15px 0 40px rgba(0, 153, 255, 0.25);
+            background: radial-gradient(circle at 0% 35%, rgba(0, 180, 255, 0.32), transparent 68%);
+            box-shadow: inset 18px 0 45px rgba(0, 140, 255, 0.25);
         }
 
-        .aura-right {
+        .aura-ronaldo {
             width: 50%;
             height: 100%;
-            background: radial-gradient(circle at 90% 30%, rgba(255, 38, 68, 0.28), transparent 70%);
-            box-shadow: inset -15px 0 40px rgba(255, 0, 85, 0.25);
+            background: radial-gradient(circle at 100% 35%, rgba(255, 30, 65, 0.32), transparent 68%);
+            box-shadow: inset -18px 0 45px rgba(255, 20, 75, 0.25);
         }
 
-        /* Screen Shake Effect */
-        @keyframes screenShake {
-            0% { transform: translate(0, 0); }
-            20% { transform: translate(-5px, 5px); }
+        /* Screen Shake Animation on Elimination */
+        @keyframes arenaShake {
+            0%, 100% { transform: translate(0, 0); }
+            20% { transform: translate(-5px, 4px); }
             40% { transform: translate(5px, -4px); }
             60% { transform: translate(-4px, -3px); }
             80% { transform: translate(4px, 3px); }
-            100% { transform: translate(0, 0); }
         }
-        .shake-active {
-            animation: screenShake 0.35s ease-in-out;
+        .shake {
+            animation: arenaShake 0.35s ease-out;
         }
 
-        /* Top Bar */
-        .top-bar {
+        /* ==========================================
+           2. HEADER BAR & TOP HUD BANNER
+           ========================================== */
+        .header-bar {
             position: relative;
             z-index: 10;
-            padding: 12px 12px 4px 12px;
+            padding: 8px 10px 4px 10px;
             display: flex;
             align-items: center;
             justify-content: space-between;
-            gap: 6px;
+            gap: 4px;
+            background: rgba(2, 6, 23, 0.75);
+            border-bottom: 1px solid rgba(56, 189, 248, 0.2);
         }
 
-        .live-pill {
+        .brand-box {
             display: flex;
-            align-items: center;
-            gap: 5px;
-            background: #dc2626;
-            color: #ffffff;
-            font-size: 11px;
+            flex-direction: column;
+        }
+
+        .brand-title {
+            font-size: 13px;
             font-weight: 900;
-            padding: 4px 10px;
-            border-radius: 999px;
-            box-shadow: 0 0 12px rgba(239, 68, 68, 0.8);
-            letter-spacing: 0.5px;
+            letter-spacing: 0.6px;
+            background: linear-gradient(90deg, #38bdf8, #34d399, #fb7185);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
         }
 
-        .live-dot {
-            width: 7px;
-            height: 7px;
-            border-radius: 50%;
-            background: #ffffff;
-            animation: pingDot 1.2s infinite;
+        .alive-pill {
+            font-size: 10px;
+            font-weight: 800;
+            color: #cbd5e1;
+        }
+        .alive-pill span {
+            color: #34d399;
+            font-weight: 900;
         }
 
-        @keyframes pingDot {
-            0%, 100% { opacity: 1; transform: scale(1); }
-            50% { opacity: 0.3; transform: scale(1.4); }
-        }
-
-        .top-controls {
+        .header-controls {
             display: flex;
             align-items: center;
             gap: 5px;
         }
 
-        .btn-pill {
-            background: rgba(15, 23, 42, 0.9);
+        .timer-badge {
+            background: rgba(127, 29, 29, 0.9);
+            border: 1.5px solid #ef4444;
+            color: #facc15;
+            font-size: 13px;
+            font-weight: 900;
+            padding: 4px 8px;
+            border-radius: 10px;
+            font-variant-numeric: tabular-nums;
+            box-shadow: 0 0 12px rgba(239, 68, 68, 0.5);
+        }
+
+        .ctrl-btn {
+            background: rgba(15, 23, 42, 0.92);
             border: 1px solid #475569;
             color: #f8fafc;
             font-size: 11px;
             font-weight: 800;
-            padding: 4px 9px;
-            border-radius: 999px;
+            padding: 5px 8px;
+            border-radius: 10px;
             cursor: pointer;
-            transition: transform 0.1s, background 0.2s;
+            transition: transform 0.1s;
         }
-        .btn-pill:active { transform: scale(0.94); }
-        .btn-music { border-color: #a855f7; background: rgba(88, 28, 135, 0.7); }
-        .btn-round { border-color: #06b6d4; color: #67e8f9; cursor: default; }
+        .ctrl-btn:active { transform: scale(0.93); }
+        .ctrl-btn.music {
+            border-color: #a855f7;
+            background: rgba(88, 28, 135, 0.75);
+            color: #f3e8ff;
+        }
 
-        /* Current Track Bar */
-        .track-bar {
+        /* Top HUD Banner */
+        .hud-banner {
             position: relative;
             z-index: 10;
-            margin: 4px 12px 0 12px;
-            padding: 5px 10px;
-            border-radius: 10px;
-            background: rgba(88, 28, 135, 0.3);
-            border: 1px solid rgba(168, 85, 247, 0.35);
+            padding: 6px 10px 2px 10px;
+            display: flex;
+            flex-direction: column;
+            gap: 5px;
+        }
+
+        .banner-headline {
+            text-align: center;
+            font-size: 15px;
+            font-weight: 900;
+            letter-spacing: 0.8px;
+            color: #ffffff;
+            text-shadow: 0 0 12px rgba(34, 211, 238, 0.75);
+        }
+        .banner-headline .live-tag {
+            background: #dc2626;
+            color: #ffffff;
+            font-size: 10px;
+            padding: 2px 6px;
+            border-radius: 6px;
+            vertical-align: middle;
+            margin-left: 4px;
+            box-shadow: 0 0 10px rgba(220, 38, 38, 0.8);
+        }
+
+        .hud-sub-row {
             display: flex;
             align-items: center;
             justify-content: space-between;
-            font-size: 11px;
+            gap: 6px;
+            background: rgba(15, 23, 42, 0.78);
+            border: 1px solid rgba(148, 163, 184, 0.25);
+            border-radius: 12px;
+            padding: 5px 8px;
         }
 
-        .track-info {
+        .target-lock {
+            font-size: 11px;
+            font-weight: 800;
+            color: #fca5a5;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+        .target-lock strong {
+            color: #fde047;
+        }
+
+        .quick-hud-btns {
+            display: flex;
+            gap: 5px;
+            flex-shrink: 0;
+        }
+
+        .mini-support-btn {
+            border: none;
+            border-radius: 8px;
+            padding: 4px 8px;
+            font-size: 10px;
+            font-weight: 900;
+            color: #ffffff;
+            cursor: pointer;
+        }
+        .mini-support-btn:active { transform: scale(0.94); }
+        .btn-cyan { background: #0284c7; }
+        .btn-emerald { background: #059669; }
+
+        /* Live Chat Simulation Ticker */
+        #chatTicker {
+            height: 22px;
+            background: rgba(2, 6, 23, 0.75);
+            border-radius: 8px;
+            padding: 0 8px;
             display: flex;
             align-items: center;
-            gap: 5px;
+            font-size: 11px;
             overflow: hidden;
             white-space: nowrap;
             text-overflow: ellipsis;
-            max-width: 260px;
+            border: 1px solid rgba(56, 189, 248, 0.18);
         }
 
-        #currentTrackLabel {
-            color: #fde047;
-            font-weight: 800;
-            overflow: hidden;
-            text-overflow: ellipsis;
-        }
-
-        #quickBgmToggleBtn {
-            background: none;
-            border: none;
-            color: #e9d5ff;
-            font-weight: 800;
-            font-size: 11px;
-            cursor: pointer;
-        }
-
-        /* Header Title */
-        .title-section {
+        /* ==========================================
+           3. CENTRAL CIRCULAR ARENA & OVERLAYS
+           ========================================== */
+        .arena-stage {
             position: relative;
             z-index: 10;
-            text-align: center;
-            margin-top: 6px;
-            padding: 0 8px;
-        }
-
-        .main-title {
-            font-size: 28px;
-            font-weight: 900;
-            letter-spacing: 1px;
-            line-height: 1.05;
-            text-transform: uppercase;
-        }
-        .text-cyan { color: #22d3ee; text-shadow: 0 0 12px rgba(34, 211, 238, 0.8); }
-        .text-emerald { color: #34d399; text-shadow: 0 0 12px rgba(52, 211, 153, 0.7); }
-        .text-rose { color: #fb7185; text-shadow: 0 0 12px rgba(244, 63, 94, 0.8); }
-
-        /* HUD Cards */
-        .hud-grid {
-            position: relative;
-            z-index: 10;
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 8px;
-            padding: 6px 12px 0 12px;
-            font-size: 10px;
-        }
-
-        .hud-card {
-            background: rgba(2, 6, 23, 0.75);
-            border-radius: 12px;
-            padding: 7px 9px;
-            border: 1px solid rgba(34, 211, 238, 0.35);
-            display: flex;
-            flex-direction: column;
-            justify-content: space-between;
-        }
-        .hud-card.right { border-color: rgba(244, 63, 94, 0.35); }
-
-        .hud-card-header {
-            display: flex;
-            justify-content: space-between;
-            font-weight: 900;
-            padding-bottom: 4px;
-            margin-bottom: 4px;
-            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
-            letter-spacing: 0.4px;
-        }
-
-        .support-row {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            font-weight: 700;
-            padding: 1px 0;
-        }
-
-        /* 5-Second Elimination Countdown HUD */
-        .countdown-box {
-            position: relative;
-            z-index: 10;
-            margin: 8px 12px 0 12px;
-            padding: 7px 12px;
-            border-radius: 14px;
-            background: linear-gradient(90deg, rgba(127, 29, 29, 0.85), rgba(15, 23, 42, 0.95), rgba(127, 29, 29, 0.85));
-            border: 1.5px solid rgba(239, 68, 68, 0.75);
-            box-shadow: 0 0 18px rgba(239, 68, 68, 0.35);
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-        }
-
-        .target-info {
-            display: flex;
-            align-items: center;
-            gap: 8px;
-        }
-
-        .target-label {
-            font-size: 9px;
-            font-weight: 800;
-            color: #fca5a5;
-            text-transform: uppercase;
-            letter-spacing: 0.6px;
-        }
-
-        #dangerTargetText {
-            font-size: 12px;
-            font-weight: 900;
-            color: #fde047;
-        }
-
-        .timer-right {
-            text-align: right;
-        }
-
-        .timer-sub {
-            font-size: 8px;
-            font-weight: 800;
-            color: #cbd5e1;
-            letter-spacing: 0.8px;
-        }
-
-        #countdownHUD {
-            font-size: 24px;
-            font-weight: 900;
-            color: #facc15;
-            text-shadow: 0 0 10px rgba(250, 204, 21, 0.85);
-            line-height: 1;
-            font-variant-numeric: tabular-nums;
-        }
-
-        /* Arena Canvas Wrapper */
-        .arena-wrapper {
-            position: relative;
-            z-index: 10;
-            width: 100%;
+            flex: 1;
             display: flex;
             align-items: center;
             justify-content: center;
-            padding: 6px 0;
+            padding: 4px;
+            min-height: 0;
         }
 
-        .canvas-container {
+        .canvas-box {
             position: relative;
-            width: 92vw;
-            max-width: 376px;
+            width: min(92vw, 390px);
             aspect-ratio: 1 / 1;
             display: flex;
             align-items: center;
@@ -360,66 +275,51 @@
             touch-action: none;
         }
 
-        /* 1-Second Elimination Popup Banner */
-        #elimBannerContainer {
+        /* 1.0-Second Center Elimination Popup Banner */
+        #elimBanner {
             position: absolute;
             left: 8px;
             right: 8px;
             top: 50%;
             transform: translateY(-50%);
-            z-index: 30;
+            z-index: 25;
             display: none;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
             pointer-events: none;
         }
 
-        .elim-card {
-            width: 100%;
-            background: rgba(3, 7, 18, 0.95);
-            border: 2px solid #ef4444;
-            border-radius: 18px;
+        .elim-box {
+            background: rgba(15, 5, 10, 0.95);
+            border: 2.5px solid #ef4444;
+            border-radius: 16px;
             padding: 12px 14px;
             text-align: center;
             box-shadow: 0 0 35px rgba(239, 68, 68, 0.95);
-            animation: popIn 0.15s ease-out;
+            animation: popScale 0.14s ease-out;
         }
 
-        @keyframes popIn {
-            0% { transform: scale(0.85); opacity: 0; }
-            100% { transform: scale(1); opacity: 1; }
+        @keyframes popScale {
+            from { transform: scale(0.84); opacity: 0; }
+            to { transform: scale(1); opacity: 1; }
         }
 
-        .elim-title {
+        .elim-label {
             font-size: 11px;
             font-weight: 900;
-            color: #f87171;
-            letter-spacing: 1.5px;
+            color: #fca5a5;
+            letter-spacing: 1.2px;
             text-transform: uppercase;
         }
 
-        .elim-country-row {
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 10px;
-            margin: 6px 0;
-        }
-
-        #elimCountryFlag {
-            font-size: 38px;
-        }
-
-        #elimCountryName {
-            font-size: 24px;
+        .elim-main {
+            font-size: 21px;
             font-weight: 900;
             color: #fde047;
+            margin: 5px 0;
+            text-shadow: 0 0 12px rgba(250, 204, 21, 0.85);
             text-transform: uppercase;
-            text-shadow: 0 0 12px rgba(250, 204, 21, 0.8);
         }
 
-        .progress-track {
+        .bar-bg {
             width: 100%;
             height: 6px;
             background: #1e293b;
@@ -428,109 +328,65 @@
             margin-top: 6px;
         }
 
-        #elimProgressBar {
+        .bar-fill-red {
             height: 100%;
             width: 100%;
             background: linear-gradient(90deg, #ef4444, #facc15);
-            transition: width 0.05s linear;
         }
 
-        /* Survivors Status Bar */
-        .status-section {
+        /* ==========================================
+           4. BOTTOM INTERACTIVE CHAT & COMMAND BAR
+           ========================================== */
+        .bottom-controls {
             position: relative;
             z-index: 10;
-            text-align: center;
-            padding: 2px 12px 6px 12px;
-        }
-
-        .survivor-badge {
-            display: inline-block;
-            background: rgba(15, 23, 42, 0.92);
-            border: 1px solid rgba(168, 85, 247, 0.55);
-            padding: 5px 16px;
-            border-radius: 999px;
-            font-size: 12px;
-            font-weight: 900;
-            letter-spacing: 0.8px;
-            box-shadow: 0 0 15px rgba(168, 85, 247, 0.3);
-        }
-
-        /* Live Chat Feed & Input */
-        .bottom-panel {
-            position: relative;
-            z-index: 10;
-            background: rgba(2, 6, 23, 0.9);
+            background: rgba(2, 6, 23, 0.92);
             border-top: 1px solid #1e293b;
-            padding: 8px 12px 12px 12px;
+            padding: 8px 10px 10px 10px;
             display: flex;
             flex-direction: column;
             gap: 6px;
         }
 
-        #liveChatFeed {
-            height: 46px;
-            overflow: hidden;
-            display: flex;
-            flex-direction: column;
-            justify-content: flex-end;
-            gap: 3px;
-            font-size: 11px;
-        }
-
-        .chat-msg {
-            display: flex;
-            align-items: center;
-            gap: 5px;
-            white-space: nowrap;
-            overflow: hidden;
-            text-overflow: ellipsis;
-            animation: slideUpChat 0.2s ease-out;
-        }
-
-        @keyframes slideUpChat {
-            from { opacity: 0; transform: translateY(6px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
-
-        .input-row {
+        .cmd-row {
             display: flex;
             gap: 6px;
         }
 
-        #chatCmdInput {
+        #countryInput {
             flex: 1;
             background: #0f172a;
             border: 1px solid #334155;
-            border-radius: 12px;
-            padding: 8px 12px;
+            border-radius: 10px;
+            padding: 8px 10px;
             color: #ffffff;
             font-size: 12px;
             font-weight: 600;
             outline: none;
         }
-        #chatCmdInput:focus { border-color: #22d3ee; }
+        #countryInput:focus {
+            border-color: #38bdf8;
+        }
 
-        .btn-action {
+        .cmd-btn {
             border: none;
-            border-radius: 12px;
-            padding: 8px 12px;
+            border-radius: 10px;
+            padding: 8px 11px;
             font-size: 11px;
             font-weight: 900;
             color: #ffffff;
             cursor: pointer;
-            white-space: nowrap;
         }
-        .btn-action:active { transform: scale(0.95); }
-        .btn-shield { background: #0891b2; }
-        .btn-boost { background: #059669; }
+        .cmd-btn:active { transform: scale(0.95); }
 
-        .quick-actions {
+        .utility-row {
             display: flex;
             justify-content: space-between;
-            gap: 5px;
+            align-items: center;
+            gap: 6px;
         }
 
-        .btn-mini {
+        .util-btn {
             flex: 1;
             background: #1e293b;
             border: 1px solid #334155;
@@ -538,14 +394,16 @@
             font-size: 10px;
             font-weight: 800;
             padding: 6px 4px;
-            border-radius: 9px;
+            border-radius: 8px;
             cursor: pointer;
             text-align: center;
         }
-        .btn-mini:active { transform: scale(0.95); }
+        .util-btn:active { transform: scale(0.95); }
 
-        /* 3-Second Auto-Restart Champion Modal */
-        #winnerModal {
+        /* ==========================================
+           5. 3-SECOND CHAMPION OVERLAY (AUTO-RESTART)
+           ========================================== */
+        #championOverlay {
             position: absolute;
             inset: 0;
             z-index: 40;
@@ -560,65 +418,90 @@
             text-align: center;
         }
 
-        .champ-crown { font-size: 48px; animation: bouncePulse 0.9s infinite; }
-        .champ-sub { font-size: 13px; font-weight: 900; color: #facc15; letter-spacing: 2px; margin-top: 6px; }
-        #winnerFlagBadge { font-size: 72px; margin: 10px 0; filter: drop-shadow(0 0 20px rgba(250, 204, 21, 0.8)); }
-        #winnerCountryName { font-size: 34px; font-weight: 900; color: #ffffff; text-transform: uppercase; text-shadow: 0 0 18px #eab308; }
+        .crown-anim {
+            font-size: 54px;
+            animation: floatCrown 1s infinite ease-in-out;
+        }
+        @keyframes floatCrown {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-6px); }
+        }
 
-        .auto-restart-box {
+        .champ-tag {
+            font-size: 13px;
+            font-weight: 900;
+            letter-spacing: 2px;
+            color: #facc15;
+            margin-top: 6px;
+        }
+
+        #champFlag {
+            font-size: 76px;
+            margin: 10px 0;
+            filter: drop-shadow(0 0 22px rgba(250, 204, 21, 0.85));
+        }
+
+        #champName {
+            font-size: 32px;
+            font-weight: 900;
+            color: #ffffff;
+            text-transform: uppercase;
+            text-shadow: 0 0 18px #eab308;
+        }
+
+        .restart-card {
             width: 100%;
             max-width: 280px;
             margin-top: 18px;
-            background: rgba(30, 41, 59, 0.85);
+            background: rgba(30, 41, 59, 0.9);
             border: 1.5px solid #facc15;
             border-radius: 14px;
-            padding: 10px 14px;
+            padding: 12px;
         }
 
-        #autoRestartText {
+        #restartText {
             font-size: 13px;
             font-weight: 900;
             color: #fde047;
             margin-bottom: 6px;
         }
 
-        #autoRestartBar {
-            height: 8px;
+        .bar-fill-gold {
+            height: 100%;
             width: 100%;
             background: linear-gradient(90deg, #facc15, #22c55e);
-            border-radius: 999px;
-            transition: width 0.05s linear;
         }
 
-        /* Custom Music Setup Modal */
+        /* ==========================================
+           6. CUSTOM MUSIC MODAL (iOS GAINNODE VOLUME FIX)
+           ========================================== */
         #musicModal {
             position: absolute;
             inset: 0;
-            z-index: 45;
+            z-index: 50;
             background: rgba(2, 6, 23, 0.92);
             backdrop-filter: blur(6px);
             -webkit-backdrop-filter: blur(6px);
             display: none;
-            flex-direction: column;
             align-items: center;
             justify-content: center;
             padding: 16px;
         }
 
-        .music-card {
+        .modal-card {
             width: 100%;
-            max-width: 340px;
+            max-width: 350px;
             background: #0f172a;
             border: 2px solid #a855f7;
             border-radius: 20px;
             padding: 16px;
-            box-shadow: 0 0 30px rgba(168, 85, 247, 0.45);
+            box-shadow: 0 0 35px rgba(168, 85, 247, 0.45);
             display: flex;
             flex-direction: column;
             gap: 12px;
         }
 
-        .music-header {
+        .modal-top {
             display: flex;
             justify-content: space-between;
             align-items: center;
@@ -626,10 +509,10 @@
             padding-bottom: 8px;
             font-weight: 900;
             font-size: 14px;
-            color: #e9d5ff;
+            color: #f3e8ff;
         }
 
-        .close-btn {
+        .modal-close {
             background: none;
             border: none;
             color: #94a3b8;
@@ -638,9 +521,9 @@
             cursor: pointer;
         }
 
-        .file-upload-label {
+        .upload-box {
             display: block;
-            background: #581c87;
+            background: rgba(88, 28, 135, 0.65);
             border: 1.5px dashed #c084fc;
             border-radius: 12px;
             padding: 12px;
@@ -651,19 +534,31 @@
             cursor: pointer;
         }
 
-        #customAudioInput {
+        #audioFileInput {
             width: 100%;
-            margin-top: 6px;
+            margin-top: 8px;
             font-size: 11px;
-            color: #cbd5e1;
+            color: #e2e8f0;
         }
 
-        .source-btns {
+        .track-status {
+            font-size: 11px;
+            color: #fde047;
+            font-weight: 800;
+            background: rgba(2, 6, 23, 0.7);
+            padding: 6px 10px;
+            border-radius: 8px;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .mode-row {
             display: flex;
             gap: 8px;
         }
 
-        .btn-source {
+        .mode-btn {
             flex: 1;
             padding: 8px;
             border-radius: 10px;
@@ -674,24 +569,45 @@
             color: #94a3b8;
             cursor: pointer;
         }
-        .btn-source.active {
+        .mode-btn.active {
             background: #6b21a8;
             border-color: #c084fc;
             color: #ffffff;
         }
 
-        .music-footer {
+        .slider-group {
+            background: rgba(2, 6, 23, 0.55);
+            padding: 10px;
+            border-radius: 12px;
+            border: 1px solid #334155;
+        }
+
+        .slider-header {
+            display: flex;
+            justify-content: space-between;
+            font-size: 12px;
+            font-weight: 800;
+            margin-bottom: 6px;
+        }
+
+        #volSlider {
+            width: 100%;
+            height: 6px;
+            accent-color: #a855f7;
+            cursor: pointer;
+        }
+
+        .modal-actions {
             display: flex;
             align-items: center;
             justify-content: space-between;
-            padding-top: 4px;
         }
 
-        .btn-play-main {
+        .play-toggle-btn {
             background: linear-gradient(90deg, #9333ea, #4f46e5);
             border: none;
             border-radius: 12px;
-            padding: 9px 16px;
+            padding: 10px 16px;
             color: #ffffff;
             font-size: 12px;
             font-weight: 900;
@@ -701,558 +617,468 @@
 </head>
 <body>
 
-    <!-- AUDIO UNLOCK BANNER -->
-    <div id="audioUnlockBanner">
-        <span>🔊 TAP HERE TO ENABLE SOUND &amp; MUSIC</span>
-        <span class="unmute-badge">UNMUTE</span>
-    </div>
-
-    <!-- MAIN 9:16 VERTICAL STREAM FRAME -->
-    <div id="streamFrame">
-        <!-- Split Lightning Aura -->
-        <div class="aura-layer">
-            <div class="aura-left"></div>
-            <div class="aura-right"></div>
+    <div id="appContainer">
+        <!-- Messi (Blue) & Ronaldo (Red) Side Lighting Auras -->
+        <div class="side-auras">
+            <div class="aura-messi"></div>
+            <div class="aura-ronaldo"></div>
         </div>
 
-        <!-- TOP STATUS BAR -->
-        <header class="top-bar">
-            <div class="live-pill">
-                <span class="live-dot"></span>
-                <span>LIVE</span>
-                <span style="opacity:0.85;font-weight:700;">64.2K</span>
+        <!-- 1. HEADER BAR -->
+        <header class="header-bar">
+            <div class="brand-box">
+                <div class="brand-title">FLAG WAR BATTLE</div>
+                <div class="alive-pill"><span id="aliveNum">48</span> / <span id="totalNum">48</span> ALIVE</div>
             </div>
-            <div class="top-controls">
-                <button id="openMusicModalBtn" class="btn-pill btn-music">🎵 Music</button>
-                <button id="soundBadge" class="btn-pill">🔊 SFX: ON</button>
-                <span class="btn-pill btn-round">R<span id="roundCounter">1</span></span>
+
+            <div class="header-controls">
+                <div id="timerBadge" class="timer-badge">5.00s</div>
+                <button id="soundToggleBtn" class="ctrl-btn">🔊 Sound</button>
+                <button id="musicOpenBtn" class="ctrl-btn music">🎵 Music</button>
             </div>
         </header>
 
-        <!-- CURRENT MUSIC TRACK INDICATOR -->
-        <div class="track-bar">
-            <div class="track-info">
-                <span>🎶</span>
-                <span style="color:#94a3b8;font-weight:700;">BGM:</span>
-                <span id="currentTrackLabel">Default Synth Beat</span>
+        <!-- 2. TOP HUD BANNER & LIVE CHAT TICKER -->
+        <section class="hud-banner">
+            <div class="banner-headline">
+                WHERE ARE YOU FROM? <span class="live-tag">LIVE ELIMINATION</span>
             </div>
-            <button id="quickBgmToggleBtn">▶️ Play</button>
-        </div>
 
-        <!-- TITLE -->
-        <div class="title-section">
-            <h1 class="main-title">
-                <span class="text-cyan">WHERE ARE </span>
-                <span class="text-emerald">YOU </span>
-                <span class="text-rose">FROM?</span>
-            </h1>
-        </div>
-
-        <!-- TWO HUD CARDS -->
-        <div class="hud-grid">
-            <div class="hud-card">
-                <div class="hud-card-header">
-                    <span style="color:#67e8f9;">● TOP SUPPORT</span>
-                    <span style="color:#fb7185;">LIVE</span>
+            <div class="hud-sub-row">
+                <div class="target-lock">
+                    🎯 Danger: <strong id="dangerName">Scanning...</strong>
                 </div>
-                <div id="supportList"></div>
-            </div>
-            <div class="hud-card right">
-                <div class="hud-card-header">
-                    <span style="color:#fda4af;">SAVE COUNTRY</span>
-                    <span>🛡️</span>
-                </div>
-                <div class="support-row">
-                    <span style="color:#94a3b8;">Chat Name</span>
-                    <span style="color:#22d3ee;">🛡️ SHIELD</span>
-                </div>
-                <div class="support-row">
-                    <span style="color:#94a3b8;">Tap Flag</span>
-                    <span style="color:#34d399;">🚀 PUSH</span>
-                </div>
-                <div class="support-row">
-                    <span style="color:#94a3b8;">Center Core</span>
-                    <span style="color:#fb7185;">💥 5.0s OUT</span>
+                <div class="quick-hud-btns">
+                    <button id="quickShieldBtn" class="mini-support-btn btn-cyan">🛡️ Shield Random</button>
+                    <button id="quickBoostBtn" class="mini-support-btn btn-emerald">⚡ Boost Random</button>
                 </div>
             </div>
-        </div>
 
-        <!-- 5-SECOND COUNTDOWN HUD -->
-        <div class="countdown-box">
-            <div class="target-info">
-                <span style="font-size:20px;">⚠️</span>
-                <div>
-                    <div class="target-label">Center Danger Zone</div>
-                    <div id="dangerTargetText">Scanning...</div>
-                </div>
+            <div id="chatTicker">
+                <span style="color:#38bdf8;font-weight:800;margin-right:6px;">LiveChat:</span>
+                <span style="color:#e2e8f0;">Type your country below to give it a Shield or Boost!</span>
             </div>
-            <div class="timer-right">
-                <div class="timer-sub">NEXT OUT IN</div>
-                <div id="countdownHUD">5.00s</div>
-            </div>
-        </div>
+        </section>
 
-        <!-- CIRCULAR ARENA CANVAS -->
-        <div class="arena-wrapper">
-            <div class="canvas-container">
-                <canvas id="arenaCanvas" width="380" height="380"></canvas>
+        <!-- 3. CIRCULAR ARENA STAGE -->
+        <main class="arena-stage">
+            <div class="canvas-box">
+                <canvas id="arenaCanvas" width="400" height="400"></canvas>
 
-                <!-- 1-SECOND ELIMINATION ALERT POPUP -->
-                <div id="elimBannerContainer">
-                    <div class="elim-card">
-                        <div class="elim-title">💥 ELIMINATED FROM ARENA 💥</div>
-                        <div class="elim-country-row">
-                            <span id="elimCountryFlag">🏳️</span>
-                            <span id="elimCountryName">COUNTRY</span>
-                        </div>
-                        <div class="progress-track">
-                            <div id="elimProgressBar"></div>
+                <!-- 1.0-Second Elimination Banner -->
+                <div id="elimBanner">
+                    <div class="elim-box">
+                        <div class="elim-label">💥 CENTER CORE STRIKE 💥</div>
+                        <div id="elimText" class="elim-main">ELIMINATED: 🏳️ NATION</div>
+                        <div class="bar-bg">
+                            <div id="elimBarFill" class="bar-fill-red"></div>
                         </div>
                     </div>
                 </div>
             </div>
-        </div>
+        </main>
 
-        <!-- SURVIVOR STATUS -->
-        <div class="status-section">
-            <div class="survivor-badge">
-                <span id="aliveCount" style="color:#34d399;font-size:14px;">48</span> /
-                <span id="totalCount" style="color:#ffffff;">48</span> ALIVE
-                (<span id="elimCount" style="color:#fb7185;">0 Out</span>)
-            </div>
-        </div>
-
-        <!-- LIVE CHAT & INTERACTIVE CONTROLS -->
-        <div class="bottom-panel">
-            <div id="liveChatFeed"></div>
-
-            <div class="input-row">
-                <input id="chatCmdInput" type="text" placeholder="Type country name (e.g. India, Brazil)...">
-                <button id="btnShieldCmd" class="btn-action btn-shield">🛡️ Shield</button>
-                <button id="btnBoostCmd" class="btn-action btn-boost">⚡ Boost</button>
+        <!-- 4. BOTTOM INTERACTIVE COMMANDS -->
+        <footer class="bottom-controls">
+            <div class="cmd-row">
+                <input id="countryInput" type="text" placeholder="Enter country name (e.g. India, Brazil, Japan)...">
+                <button id="sendShieldBtn" class="cmd-btn btn-cyan">🛡️ Shield</button>
+                <button id="sendBoostBtn" class="cmd-btn btn-emerald">⚡ Boost</button>
             </div>
 
-            <div class="quick-actions">
-                <button id="btnToggleAutoChat" class="btn-mini">🤖 Chat: ON</button>
-                <button id="btnNudgeAll" class="btn-mini">🌪️ Stir Flags</button>
-                <button id="btnPauseGame" class="btn-mini">⏸️ Pause</button>
-                <button id="btnResetGame" class="btn-mini">🔄 Restart</button>
+            <div class="utility-row">
+                <button id="autoChatBtn" class="util-btn">🤖 Auto Chat: ON</button>
+                <button id="stirBtn" class="util-btn">🌪️ Stir Flags</button>
+                <button id="pauseBtn" class="util-btn">⏸️ Pause</button>
+                <button id="resetBtn" class="util-btn">🔄 Reset</button>
             </div>
-        </div>
+        </footer>
 
-        <!-- 3-SECOND AUTO-RESTART CHAMPION OVERLAY -->
-        <div id="winnerModal">
-            <div class="champ-crown">👑</div>
-            <div class="champ-sub">CHAMPION SURVIVOR!</div>
-            <div id="winnerFlagBadge">🏆</div>
-            <h2 id="winnerCountryName">NATION</h2>
-            <p style="font-size:12px;color:#cbd5e1;margin-top:4px;">Last country standing in the arena!</p>
+        <!-- 5. 3-SECOND CHAMPION AUTO-RESTART OVERLAY -->
+        <div id="championOverlay">
+            <div class="crown-anim">👑</div>
+            <div class="champ-tag">ULTIMATE CHAMPION</div>
+            <div id="champFlag">🏆</div>
+            <h2 id="champName">COUNTRY</h2>
+            <p style="font-size:12px;color:#cbd5e1;margin-top:4px;">Last country surviving in the arena!</p>
 
-            <div class="auto-restart-box">
-                <div id="autoRestartText">Next round in 3.0s...</div>
-                <div class="progress-track">
-                    <div id="autoRestartBar"></div>
+            <div class="restart-card">
+                <div id="restartText">Next Round Starts in 3.0s...</div>
+                <div class="bar-bg">
+                    <div id="restartBarFill" class="bar-fill-gold"></div>
                 </div>
             </div>
         </div>
 
-        <!-- CUSTOM MUSIC SETUP MODAL -->
+        <!-- 6. CUSTOM MUSIC MANAGER MODAL -->
         <div id="musicModal">
-            <div class="music-card">
-                <div class="music-header">
-                    <span>🎵 CUSTOM MUSIC SETUP</span>
-                    <button id="closeMusicModalBtn" class="close-btn">✕</button>
+            <div class="modal-card">
+                <div class="modal-top">
+                    <span>🎵 MUSIC &amp; VOLUME SETUP</span>
+                    <button id="musicCloseBtn" class="modal-close">✕</button>
                 </div>
 
-                <label class="file-upload-label">
-                    📁 Select .m4a / .mp3 / .wav Song from Device
-                    <input type="file" id="customAudioInput" accept=".m4a,.mp3,.wav,.aac,.ogg,.flac,audio/mp4,audio/x-m4a,audio/mpeg,audio/wav,audio/*">
+                <label class="upload-box">
+                    📁 Upload Custom Music (.m4a / .mp3 / .wav)
+                    <input type="file" id="audioFileInput" accept=".m4a,audio/mp4,audio/x-m4a,.mp3,.wav,.aac,.ogg,audio/*">
                 </label>
 
-                <div class="source-btns">
-                    <button id="btnSelectDefaultBgm" class="btn-source active">Default Synth</button>
-                    <button id="btnSelectCustomBgm" class="btn-source" disabled>Custom Song</button>
+                <div id="activeTrackName" class="track-status">Now Playing: Default Synth Beat</div>
+
+                <div class="mode-row">
+                    <button id="modeDefaultBtn" class="mode-btn active">Default Synth</button>
+                    <button id="modeCustomBtn" class="mode-btn" disabled>Custom Track</button>
                 </div>
 
-                <div>
-                    <div style="display:flex;justify-content:space-between;font-size:11px;font-weight:800;margin-bottom:4px;">
-                        <span>Music Volume</span>
-                        <span id="volumeValueLabel" style="color:#22d3ee;">75%</span>
+                <div class="slider-group">
+                    <div class="slider-header">
+                        <span>🔊 Music Volume (iOS &amp; Web)</span>
+                        <span id="volPercentText" style="color:#22d3ee;">65%</span>
                     </div>
-                    <input type="range" id="bgmVolumeSlider" min="0" max="100" value="75" style="width:100%;accent-color:#a855f7;">
+                    <input type="range" id="volSlider" min="0" max="100" value="65">
                 </div>
 
-                <div class="music-footer">
-                    <button id="btnModalPlayPause" class="btn-play-main">
-                        <span id="modalPlayIcon">▶️</span> <span id="modalPlayText">Play Music</span>
-                    </button>
-                    <label style="font-size:11px;font-weight:800;display:flex;align-items:center;gap:5px;cursor:pointer;">
-                        <input type="checkbox" id="loopAudioCheckbox" checked style="accent-color:#a855f7;">
-                        <span>Loop</span>
+                <div class="modal-actions">
+                    <button id="musicPlayPauseBtn" class="play-toggle-btn">▶️ Play Music</button>
+                    <label style="font-size:12px;font-weight:800;display:flex;align-items:center;gap:6px;cursor:pointer;">
+                        <input type="checkbox" id="loopMusicCheck" checked style="accent-color:#a855f7;width:16px;height:16px;">
+                        <span>Loop Track</span>
                     </label>
                 </div>
             </div>
         </div>
 
-        <!-- Hidden Audio Element -->
-        <audio id="customAudioElement" preload="auto" playsinline></audio>
+        <!-- Hidden HTML5 Audio Element Routed Through Web Audio GainNode -->
+        <audio id="bgAudioElement" preload="auto" playsinline></audio>
     </div>
 
     <script>
-        // ==========================================
-        // 1. WEB AUDIO SYNTHESIZER & CUSTOM MUSIC
-        // ==========================================
+        /* ==========================================================================
+           SECTION 1: WEB AUDIO ENGINE & TRUE iOS/MOBILE VOLUME GAIN PIPELINE
+           ========================================================================== */
         let audioCtx = null;
-        let soundMuted = false;
-        let bgmMuted = true;
-        let bgmIsPlaying = false;
-        let bgmStep = 0;
-        let bgmTimer = null;
-        let bgmGainNode = null;
+        let sfxEnabled = true;
 
-        let musicMode = 'default';
-        const customAudioEl = document.getElementById('customAudioElement');
-        let customAudioReady = false;
-        let bgmVolume = 0.75;
+        // GainNode controls BOTH custom <audio> element & procedural synth beat
+        // This guarantees smooth volume reduction (0% - 100%) on iOS Safari where audio.volume is read-only!
+        let masterMusicGain = null;
+        let mediaSourceNode = null;
+        const bgAudioEl = document.getElementById('bgAudioElement');
 
-        function getAudioContext() {
+        let musicMode = 'default'; // 'default' | 'custom'
+        let customFileLoaded = false;
+        let isMusicPlaying = false;
+        let currentMusicVolume = 0.65; // Default 65%
+        let synthInterval = null;
+        let synthStep = 0;
+
+        function initAudioPipeline() {
             if (!audioCtx) {
-                const AudioCtx = window.AudioContext || window.webkitAudioContext;
-                if (AudioCtx) {
-                    audioCtx = new AudioCtx();
-                    bgmGainNode = audioCtx.createGain();
-                    bgmGainNode.gain.value = 0.12 * bgmVolume;
-                    bgmGainNode.connect(audioCtx.destination);
+                const AudioContextClass = window.AudioContext || window.webkitAudioContext;
+                if (AudioContextClass) {
+                    audioCtx = new AudioContextClass();
+
+                    // Master GainNode for Music
+                    masterMusicGain = audioCtx.createGain();
+                    masterMusicGain.gain.setValueAtTime(currentMusicVolume, audioCtx.currentTime);
+                    masterMusicGain.connect(audioCtx.destination);
+
+                    // Connect HTML5 <audio> element into Web Audio GainNode once
+                    try {
+                        mediaSourceNode = audioCtx.createMediaElementSource(bgAudioEl);
+                        mediaSourceNode.connect(masterMusicGain);
+                    } catch (err) {
+                        // Fallback if already connected
+                    }
                 }
             }
             if (audioCtx && audioCtx.state === 'suspended') {
                 audioCtx.resume();
             }
-            return audioCtx;
+            applyMusicVolume(currentMusicVolume);
         }
 
-        function unlockAudioGlobal() {
-            const ctx = getAudioContext();
-            if (ctx) {
-                const osc = ctx.createOscillator();
-                const gain = ctx.createGain();
-                gain.gain.value = 0.001;
-                osc.connect(gain);
-                gain.connect(ctx.destination);
-                osc.start();
-                osc.stop(ctx.currentTime + 0.04);
+        function applyMusicVolume(normalizedVal) {
+            currentMusicVolume = Math.max(0, Math.min(1, normalizedVal));
 
-                const banner = document.getElementById('audioUnlockBanner');
-                if (banner) banner.style.display = 'none';
-
-                if (bgmMuted) {
-                    playMusic();
-                }
+            // 1. Update Web Audio GainNode (Works on iOS Safari, Chrome, Android, Desktop)
+            if (masterMusicGain && audioCtx) {
+                masterMusicGain.gain.setTargetAtTime(currentMusicVolume, audioCtx.currentTime, 0.015);
             }
+
+            // 2. Also update native HTMLMediaElement.volume as secondary layer on Desktop
+            try {
+                bgAudioEl.volume = currentMusicVolume;
+            } catch (e) {}
         }
 
-        window.addEventListener('pointerdown', unlockAudioGlobal, { once: true });
-        document.getElementById('audioUnlockBanner').addEventListener('click', unlockAudioGlobal);
+        // Unlock Web Audio on first user interaction anywhere
+        window.addEventListener('pointerdown', () => {
+            initAudioPipeline();
+        }, { once: true });
 
-        // Procedural Synthwave Beat
-        const BGM_STEP_MS = (60 / 124 / 4) * 1000;
-        const BASS_NOTES = [110, 110, 130.8, 110, 146.8, 110, 130.8, 123.5, 98, 98, 123.5, 98, 130.8, 98, 110, 82.4];
-        const ARP_NOTES = [440, 523.25, 659.25, 880, 523.25, 659.25, 783.99, 659.25, 392, 493.88, 587.33, 783.99, 493.88, 587.33, 659.25, 523.25];
+        // Procedural Synthwave Beat (routed through masterMusicGain)
+        const SYNTH_BASS = [110, 110, 130.81, 110, 146.83, 110, 130.81, 123.47, 98, 98, 123.47, 98, 130.81, 98, 110, 82.41];
+        const SYNTH_ARP = [440, 523.25, 659.25, 880, 523.25, 659.25, 783.99, 659.25, 392, 493.88, 587.33, 783.99, 493.88, 587.33, 659.25, 523.25];
 
-        function playBgmStep() {
-            if (!audioCtx || bgmMuted || !bgmIsPlaying || musicMode !== 'default') return;
+        function triggerSynthStep() {
+            if (!audioCtx || !masterMusicGain || !isMusicPlaying || musicMode !== 'default') return;
             const now = audioCtx.currentTime;
 
-            if (bgmStep % 4 === 0) {
-                const osc = audioCtx.createOscillator();
-                const g = audioCtx.createGain();
-                osc.frequency.setValueAtTime(135, now);
-                osc.frequency.exponentialRampToValueAtTime(34, now + 0.12);
-                g.gain.setValueAtTime(0.26, now);
-                g.gain.exponentialRampToValueAtTime(0.001, now + 0.13);
-                osc.connect(g); g.connect(bgmGainNode);
-                osc.start(now); osc.stop(now + 0.13);
+            // Kick on every 4th 16th-note
+            if (synthStep % 4 === 0) {
+                const kick = audioCtx.createOscillator();
+                const kGain = audioCtx.createGain();
+                kick.frequency.setValueAtTime(135, now);
+                kick.frequency.exponentialRampToValueAtTime(36, now + 0.12);
+                kGain.gain.setValueAtTime(0.32, now);
+                kGain.gain.exponentialRampToValueAtTime(0.001, now + 0.13);
+                kick.connect(kGain);
+                kGain.connect(masterMusicGain);
+                kick.start(now);
+                kick.stop(now + 0.13);
             }
 
-            if (bgmStep % 2 === 0) {
-                const osc = audioCtx.createOscillator();
-                const g = audioCtx.createGain();
-                osc.type = 'triangle';
-                osc.frequency.setValueAtTime(ARP_NOTES[(bgmStep / 2) % ARP_NOTES.length], now);
-                g.gain.setValueAtTime(0.06, now);
-                g.gain.exponentialRampToValueAtTime(0.0001, now + 0.14);
-                osc.connect(g); g.connect(bgmGainNode);
-                osc.start(now); osc.stop(now + 0.14);
+            // Melodic Arp on every 2nd step
+            if (synthStep % 2 === 0) {
+                const arp = audioCtx.createOscillator();
+                const aGain = audioCtx.createGain();
+                arp.type = 'triangle';
+                arp.frequency.setValueAtTime(SYNTH_ARP[(synthStep / 2) % SYNTH_ARP.length], now);
+                aGain.gain.setValueAtTime(0.08, now);
+                aGain.gain.exponentialRampToValueAtTime(0.0001, now + 0.14);
+                arp.connect(aGain);
+                aGain.connect(masterMusicGain);
+                arp.start(now);
+                arp.stop(now + 0.14);
             }
 
+            // Bassline
             const bass = audioCtx.createOscillator();
-            const bg = audioCtx.createGain();
+            const bGain = audioCtx.createGain();
             bass.type = 'sawtooth';
-            bass.frequency.setValueAtTime(BASS_NOTES[bgmStep % BASS_NOTES.length], now);
-            bg.gain.setValueAtTime(0.08, now);
-            bg.gain.exponentialRampToValueAtTime(0.001, now + 0.11);
-            bass.connect(bg); bg.connect(bgmGainNode);
-            bass.start(now); bass.stop(now + 0.11);
+            bass.frequency.setValueAtTime(SYNTH_BASS[synthStep % SYNTH_BASS.length], now);
+            bGain.gain.setValueAtTime(0.10, now);
+            bGain.gain.exponentialRampToValueAtTime(0.001, now + 0.11);
+            bass.connect(bGain);
+            bGain.connect(masterMusicGain);
+            bass.start(now);
+            bass.stop(now + 0.11);
 
-            bgmStep = (bgmStep + 1) % 64;
+            synthStep = (synthStep + 1) % 64;
         }
 
-        function playMusic() {
-            getAudioContext();
-            bgmMuted = false;
-            bgmIsPlaying = true;
+        function startMusic() {
+            initAudioPipeline();
+            isMusicPlaying = true;
+            applyMusicVolume(currentMusicVolume);
 
-            if (musicMode === 'custom' && customAudioReady) {
-                if (bgmTimer) { clearInterval(bgmTimer); bgmTimer = null; }
-                customAudioEl.volume = bgmVolume;
-                customAudioEl.play().catch(() => {});
+            if (musicMode === 'custom' && customFileLoaded) {
+                if (synthInterval) {
+                    clearInterval(synthInterval);
+                    synthInterval = null;
+                }
+                bgAudioEl.loop = document.getElementById('loopMusicCheck').checked;
+                bgAudioEl.play().catch(() => {});
             } else {
-                customAudioEl.pause();
-                if (!bgmTimer) {
-                    bgmTimer = setInterval(playBgmStep, BGM_STEP_MS);
+                bgAudioEl.pause();
+                if (!synthInterval) {
+                    synthInterval = setInterval(triggerSynthStep, 125);
                 }
             }
-            updateMusicUI();
+            document.getElementById('musicPlayPauseBtn').innerText = '⏸️ Pause Music';
         }
 
-        function pauseMusic() {
-            bgmMuted = true;
-            bgmIsPlaying = false;
-            if (bgmTimer) { clearInterval(bgmTimer); bgmTimer = null; }
-            customAudioEl.pause();
-            updateMusicUI();
+        function stopMusic() {
+            isMusicPlaying = false;
+            if (synthInterval) {
+                clearInterval(synthInterval);
+                synthInterval = null;
+            }
+            bgAudioEl.pause();
+            document.getElementById('musicPlayPauseBtn').innerText = '▶️ Play Music';
         }
 
-        function toggleMusic() {
-            if (bgmIsPlaying && !bgmMuted) pauseMusic();
-            else playMusic();
-        }
-
-        function updateMusicUI() {
-            const active = bgmIsPlaying && !bgmMuted;
-            document.getElementById('quickBgmToggleBtn').innerText = active ? '⏸️ Pause' : '▶️ Play';
-            document.getElementById('modalPlayIcon').innerText = active ? '⏸️' : '▶️';
-            document.getElementById('modalPlayText').innerText = active ? 'Pause Music' : 'Play Music';
-        }
-
-        // Custom .m4a / .mp3 Upload Handler
-        document.getElementById('customAudioInput').addEventListener('change', function (e) {
+        // Custom File Upload (.m4a, .mp3, .wav, etc.)
+        document.getElementById('audioFileInput').addEventListener('change', (e) => {
             const file = e.target.files[0];
             if (!file) return;
-            const url = URL.createObjectURL(file);
-            customAudioEl.src = url;
-            customAudioEl.loop = document.getElementById('loopAudioCheckbox').checked;
-            customAudioEl.volume = bgmVolume;
-            customAudioEl.load();
-            customAudioReady = true;
 
+            initAudioPipeline();
+            const objectURL = URL.createObjectURL(file);
+            bgAudioEl.src = objectURL;
+            bgAudioEl.loop = document.getElementById('loopMusicCheck').checked;
+            bgAudioEl.load();
+
+            customFileLoaded = true;
             musicMode = 'custom';
-            document.getElementById('currentTrackLabel').innerText = file.name;
 
-            const customBtn = document.getElementById('btnSelectCustomBgm');
+            document.getElementById('activeTrackName').innerText = `Now Playing: ${file.name}`;
+            const customBtn = document.getElementById('modeCustomBtn');
             customBtn.disabled = false;
             customBtn.classList.add('active');
-            document.getElementById('btnSelectDefaultBgm').classList.remove('active');
+            document.getElementById('modeDefaultBtn').classList.remove('active');
 
-            playMusic();
+            startMusic();
         });
 
-        document.getElementById('btnSelectDefaultBgm').addEventListener('click', () => {
+        document.getElementById('modeDefaultBtn').addEventListener('click', () => {
             musicMode = 'default';
-            document.getElementById('currentTrackLabel').innerText = 'Default Synth Beat';
-            document.getElementById('btnSelectDefaultBgm').classList.add('active');
-            document.getElementById('btnSelectCustomBgm').classList.remove('active');
-            if (bgmIsPlaying && !bgmMuted) playMusic();
+            document.getElementById('activeTrackName').innerText = 'Now Playing: Default Synth Beat';
+            document.getElementById('modeDefaultBtn').classList.add('active');
+            document.getElementById('modeCustomBtn').classList.remove('active');
+            if (isMusicPlaying) startMusic();
         });
 
-        document.getElementById('btnSelectCustomBgm').addEventListener('click', () => {
-            if (!customAudioReady) return;
+        document.getElementById('modeCustomBtn').addEventListener('click', () => {
+            if (!customFileLoaded) return;
             musicMode = 'custom';
-            const f = document.getElementById('customAudioInput').files[0];
-            if (f) document.getElementById('currentTrackLabel').innerText = f.name;
-            document.getElementById('btnSelectCustomBgm').classList.add('active');
-            document.getElementById('btnSelectDefaultBgm').classList.remove('active');
-            if (bgmIsPlaying && !bgmMuted) playMusic();
+            const f = document.getElementById('audioFileInput').files[0];
+            if (f) document.getElementById('activeTrackName').innerText = `Now Playing: ${f.name}`;
+            document.getElementById('modeCustomBtn').classList.add('active');
+            document.getElementById('modeDefaultBtn').classList.remove('active');
+            if (isMusicPlaying) startMusic();
         });
 
-        document.getElementById('bgmVolumeSlider').addEventListener('input', (e) => {
-            bgmVolume = e.target.value / 100;
-            document.getElementById('volumeValueLabel').innerText = `${e.target.value}%`;
-            if (bgmGainNode) bgmGainNode.gain.value = 0.12 * bgmVolume;
-            customAudioEl.volume = bgmVolume;
+        // Real-Time Volume Slider (0% - 100%)
+        document.getElementById('volSlider').addEventListener('input', (e) => {
+            initAudioPipeline();
+            const pct = parseInt(e.target.value, 10);
+            document.getElementById('volPercentText').innerText = `${pct}%`;
+            applyMusicVolume(pct / 100);
         });
 
-        document.getElementById('loopAudioCheckbox').addEventListener('change', (e) => {
-            customAudioEl.loop = e.target.checked;
+        document.getElementById('loopMusicCheck').addEventListener('change', (e) => {
+            bgAudioEl.loop = e.target.checked;
         });
 
-        document.getElementById('openMusicModalBtn').addEventListener('click', () => {
+        document.getElementById('musicPlayPauseBtn').addEventListener('click', () => {
+            if (isMusicPlaying) stopMusic();
+            else startMusic();
+        });
+
+        document.getElementById('musicOpenBtn').addEventListener('click', () => {
+            initAudioPipeline();
             document.getElementById('musicModal').style.display = 'flex';
         });
-        document.getElementById('closeMusicModalBtn').addEventListener('click', () => {
+
+        document.getElementById('musicCloseBtn').addEventListener('click', () => {
             document.getElementById('musicModal').style.display = 'none';
         });
-        document.getElementById('btnModalPlayPause').addEventListener('click', toggleMusic);
-        document.getElementById('quickBgmToggleBtn').addEventListener('click', toggleMusic);
 
-        // Sound Effects
-        function playTone(freq, type = 'sine', dur = 0.08, vol = 0.14) {
-            if (soundMuted) return;
+        // Procedural Sound Effects (Beeps, Explosions, Shields, Fanfare)
+        function playSfxTone(freq, type = 'sine', duration = 0.08, volume = 0.14) {
+            if (!sfxEnabled) return;
             try {
-                const ctx = getAudioContext();
-                if (!ctx) return;
-                const osc = ctx.createOscillator();
-                const gain = ctx.createGain();
+                initAudioPipeline();
+                if (!audioCtx) return;
+                const osc = audioCtx.createOscillator();
+                const gain = audioCtx.createGain();
                 osc.type = type;
-                osc.frequency.setValueAtTime(freq, ctx.currentTime);
-                gain.gain.setValueAtTime(vol, ctx.currentTime);
-                gain.gain.exponentialRampToValueAtTime(0.0001, ctx.currentTime + dur);
-                osc.connect(gain); gain.connect(ctx.destination);
-                osc.start(); osc.stop(ctx.currentTime + dur);
+                osc.frequency.setValueAtTime(freq, audioCtx.currentTime);
+                gain.gain.setValueAtTime(volume, audioCtx.currentTime);
+                gain.gain.exponentialRampToValueAtTime(0.0001, audioCtx.currentTime + duration);
+                osc.connect(gain);
+                gain.connect(audioCtx.destination);
+                osc.start();
+                osc.stop(audioCtx.currentTime + duration);
             } catch (e) {}
         }
 
-        const sfxBounce = () => playTone(260 + Math.random() * 110, 'triangle', 0.03, 0.025);
-        const sfxTick = () => playTone(840, 'sine', 0.05, 0.11);
-        const sfxUrgentTick = () => playTone(1280, 'square', 0.07, 0.16);
-        const sfxShield = () => {
-            playTone(460, 'sine', 0.09, 0.16);
-            setTimeout(() => playTone(820, 'sine', 0.15, 0.16), 50);
+        const playCountdownBeep = (urgent) => playSfxTone(urgent ? 1240 : 820, urgent ? 'square' : 'sine', 0.06, urgent ? 0.15 : 0.11);
+        const playShieldSfx = () => {
+            playSfxTone(480, 'sine', 0.08, 0.15);
+            setTimeout(() => playSfxTone(860, 'sine', 0.14, 0.15), 50);
         };
-        const sfxBoost = () => {
-            playTone(280, 'sawtooth', 0.07, 0.13);
-            setTimeout(() => playTone(620, 'sine', 0.11, 0.13), 40);
+        const playBoostSfx = () => {
+            playSfxTone(300, 'sawtooth', 0.07, 0.12);
+            setTimeout(() => playSfxTone(640, 'sine', 0.10, 0.12), 40);
         };
-        const sfxExplosion = () => {
-            if (soundMuted) return;
+        const playEliminationBass = () => {
+            if (!sfxEnabled) return;
             try {
-                const ctx = getAudioContext();
-                if (!ctx) return;
-                const osc = ctx.createOscillator();
-                const gain = ctx.createGain();
+                initAudioPipeline();
+                if (!audioCtx) return;
+                const osc = audioCtx.createOscillator();
+                const gain = audioCtx.createGain();
                 osc.type = 'sawtooth';
-                osc.frequency.setValueAtTime(190, ctx.currentTime);
-                osc.frequency.exponentialRampToValueAtTime(28, ctx.currentTime + 0.45);
-                gain.gain.setValueAtTime(0.42, ctx.currentTime);
-                gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.48);
-                osc.connect(gain); gain.connect(ctx.destination);
-                osc.start(); osc.stop(ctx.currentTime + 0.48);
+                osc.frequency.setValueAtTime(185, audioCtx.currentTime);
+                osc.frequency.exponentialRampToValueAtTime(28, audioCtx.currentTime + 0.45);
+                gain.gain.setValueAtTime(0.42, audioCtx.currentTime);
+                gain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + 0.48);
+                osc.connect(gain);
+                gain.connect(audioCtx.destination);
+                osc.start();
+                osc.stop(audioCtx.currentTime + 0.48);
             } catch (e) {}
         };
-        const sfxFanfare = () => {
-            [523.25, 659.25, 783.99, 1046.5].forEach((f, idx) => {
-                setTimeout(() => playTone(f, 'sine', 0.25, 0.18), idx * 100);
+        const playChampionFanfare = () => {
+            [523.25, 659.25, 783.99, 1046.50].forEach((freq, i) => {
+                setTimeout(() => playSfxTone(freq, 'sine', 0.25, 0.18), i * 110);
             });
         };
 
-        // ==========================================
-        // 2. 48 NATIONS DATABASE & VECTOR FLAGS
-        // ==========================================
-        const COUNTRIES_DB = [
-            { name: "India", flag: "🇮🇳", type: "india", primary: "#FF9933", sec: "#138808" },
-            { name: "Sri Lanka", flag: "🇱🇰", type: "srilanka", primary: "#8D1B3D", sec: "#FFBE29" },
-            { name: "Brazil", flag: "🇧🇷", type: "brazil", primary: "#009C3B", sec: "#FFDF00" },
-            { name: "Argentina", flag: "🇦🇷", type: "argentina", primary: "#75AADB", sec: "#FFFFFF" },
-            { name: "Portugal", flag: "🇵🇹", type: "portugal", primary: "#006600", sec: "#FF0000" },
-            { name: "USA", flag: "🇺🇸", type: "usa", primary: "#B22234", sec: "#3C3B6E" },
-            { name: "UK", flag: "🇬🇧", type: "uk", primary: "#012169", sec: "#C8102E" },
-            { name: "Japan", flag: "🇯🇵", type: "japan", primary: "#FFFFFF", sec: "#BC002D" },
-            { name: "South Korea", flag: "🇰🇷", type: "korea", primary: "#FFFFFF", sec: "#CD2E3A" },
-            { name: "China", flag: "🇨🇳", type: "china", primary: "#DE2910", sec: "#FFDE00" },
-            { name: "Russia", flag: "🇷🇺", type: "h-tricolor", primary: "#FFFFFF", mid: "#0039A6", sec: "#D52B1E" },
-            { name: "Germany", flag: "🇩🇪", type: "h-tricolor", primary: "#000000", mid: "#DD0000", sec: "#FFCE00" },
-            { name: "France", flag: "🇫🇷", type: "v-tricolor", primary: "#002654", mid: "#FFFFFF", sec: "#ED2939" },
-            { name: "Italy", flag: "🇮🇹", type: "v-tricolor", primary: "#008C45", mid: "#FFFFFF", sec: "#CD212A" },
-            { name: "Spain", flag: "🇪🇸", type: "spain", primary: "#AA151B", sec: "#F1BF00" },
-            { name: "Turkey", flag: "🇹🇷", type: "turkey", primary: "#E30A17", sec: "#FFFFFF" },
-            { name: "Saudi Arabia", flag: "🇸🇦", type: "solid-sym", primary: "#006C35", sec: "#FFFFFF", sym: "⚔️" },
-            { name: "UAE", flag: "🇦🇪", type: "uae", primary: "#00732F", mid: "#FFFFFF", sec: "#000000", side: "#FF0000" },
-            { name: "Pakistan", flag: "🇵🇰", type: "pakistan", primary: "#115740", sec: "#FFFFFF" },
-            { name: "Bangladesh", flag: "🇧🇩", type: "bangladesh", primary: "#006A4E", sec: "#F42A41" },
-            { name: "Canada", flag: "🇨🇦", type: "canada", primary: "#FF0000", sec: "#FFFFFF" },
-            { name: "Australia", flag: "🇦🇺", type: "australia", primary: "#00008B", sec: "#FF0000" },
-            { name: "Singapore", flag: "🇸🇬", type: "h-bicolor", primary: "#ED2939", sec: "#FFFFFF" },
-            { name: "Thailand", flag: "🇹🇭", type: "thailand", primary: "#A51931", mid: "#2D2A4A", sec: "#FFFFFF" },
-            { name: "Vietnam", flag: "🇻🇳", type: "vietnam", primary: "#DA251D", sec: "#FFFF00" },
-            { name: "Indonesia", flag: "🇮🇩", type: "h-bicolor", primary: "#FF0000", sec: "#FFFFFF" },
-            { name: "Malaysia", flag: "🇲🇾", type: "usa", primary: "#CC0001", sec: "#010066" },
-            { name: "Philippines", flag: "🇵🇭", type: "czech", primary: "#CE1126", sec: "#0038A8", wedge: "#FFFFFF" },
-            { name: "Mexico", flag: "🇲🇽", type: "v-tricolor", primary: "#006847", mid: "#FFFFFF", sec: "#CE1126" },
-            { name: "Colombia", flag: "🇨🇴", type: "colombia", primary: "#FCD116", mid: "#003893", sec: "#CE1126" },
-            { name: "Chile", flag: "🇨🇱", type: "h-bicolor", primary: "#FFFFFF", sec: "#D52B1E" },
-            { name: "Peru", flag: "🇵🇪", type: "v-tricolor", primary: "#D91023", mid: "#FFFFFF", sec: "#D91023" },
-            { name: "Netherlands", flag: "🇳🇱", type: "h-tricolor", primary: "#AE1C28", mid: "#FFFFFF", sec: "#21468B" },
-            { name: "Switzerland", flag: "🇨🇭", type: "swiss", primary: "#DA291C", sec: "#FFFFFF" },
-            { name: "Sweden", flag: "🇸🇪", type: "nordic", primary: "#006AA7", sec: "#FECC00" },
-            { name: "Norway", flag: "🇳🇴", type: "nordic", primary: "#BA0C2F", sec: "#00205B" },
-            { name: "Poland", flag: "🇵🇱", type: "h-bicolor", primary: "#FFFFFF", sec: "#DC143C" },
-            { name: "Ukraine", flag: "🇺🇦", type: "h-bicolor", primary: "#0057B7", sec: "#FFDD00" },
-            { name: "Ireland", flag: "🇮🇪", type: "v-tricolor", primary: "#169B62", mid: "#FFFFFF", sec: "#FF883E" },
-            { name: "Belgium", flag: "🇧🇪", type: "v-tricolor", primary: "#000000", mid: "#FDDA24", sec: "#EF3340" },
-            { name: "Egypt", flag: "🇪🇬", type: "h-tricolor", primary: "#C8102E", mid: "#FFFFFF", sec: "#000000" },
-            { name: "Nigeria", flag: "🇳🇬", type: "v-tricolor", primary: "#008751", mid: "#FFFFFF", sec: "#008751" },
-            { name: "South Africa", flag: "🇿🇦", type: "h-tricolor", primary: "#DE3831", mid: "#007A4D", sec: "#002395" },
-            { name: "Morocco", flag: "🇲🇦", type: "solid-sym", primary: "#C1272D", sec: "#006233", sym: "★" },
-            { name: "Ghana", flag: "🇬🇭", type: "h-tricolor", primary: "#D31034", mid: "#FFD100", sec: "#006B3F" },
-            { name: "Qatar", flag: "🇶🇦", type: "uae", primary: "#8D1B3D", mid: "#8D1B3D", sec: "#8D1B3D", side: "#FFFFFF" },
-            { name: "Iran", flag: "🇮🇷", type: "h-tricolor", primary: "#239F40", mid: "#FFFFFF", sec: "#DA0000" },
-            { name: "Nepal", flag: "🇳🇵", type: "solid-sym", primary: "#DC143C", sec: "#FFFFFF", sym: "☀️" }
+        document.getElementById('soundToggleBtn').addEventListener('click', (e) => {
+            initAudioPipeline();
+            sfxEnabled = !sfxEnabled;
+            e.target.innerText = sfxEnabled ? '🔊 Sound' : '🔇 Muted';
+        });
+
+        /* ==========================================================================
+           SECTION 2: 48 NATIONS DATABASE & PROCEDURAL VECTOR FLAGS
+           ========================================================================== */
+        const COUNTRIES = [
+            { code: "IND", name: "India", flag: "🇮🇳", type: "india", p: "#FF9933", s: "#138808" },
+            { code: "LKA", name: "Sri Lanka", flag: "🇱🇰", type: "srilanka", p: "#8D1B3D", s: "#FFBE29" },
+            { code: "BRA", name: "Brazil", flag: "🇧🇷", type: "brazil", p: "#009C3B", s: "#FFDF00" },
+            { code: "ARG", name: "Argentina", flag: "🇦🇷", type: "argentina", p: "#75AADB", s: "#FFFFFF" },
+            { code: "POR", name: "Portugal", flag: "🇵🇹", type: "portugal", p: "#006600", s: "#FF0000" },
+            { code: "USA", name: "USA", flag: "🇺🇸", type: "usa", p: "#B22234", s: "#3C3B6E" },
+            { code: "GBR", name: "UK", flag: "🇬🇧", type: "uk", p: "#012169", s: "#C8102E" },
+            { code: "JPN", name: "Japan", flag: "🇯🇵", type: "japan", p: "#FFFFFF", s: "#BC002D" },
+            { code: "KOR", name: "South Korea", flag: "🇰🇷", type: "korea", p: "#FFFFFF", s: "#CD2E3A" },
+            { code: "CHN", name: "China", flag: "🇨🇳", type: "star-solid", p: "#DE2910", s: "#FFDE00" },
+            { code: "RUS", name: "Russia", flag: "🇷🇺", type: "h3", p: "#FFFFFF", m: "#0039A6", s: "#D52B1E" },
+            { code: "GER", name: "Germany", flag: "🇩🇪", type: "h3", p: "#000000", m: "#DD0000", s: "#FFCE00" },
+            { code: "FRA", name: "France", flag: "🇫🇷", type: "v3", p: "#002654", m: "#FFFFFF", s: "#ED2939" },
+            { code: "ITA", name: "Italy", flag: "🇮🇹", type: "v3", p: "#008C45", m: "#FFFFFF", s: "#CD212A" },
+            { code: "ESP", name: "Spain", flag: "🇪🇸", type: "spain", p: "#AA151B", s: "#F1BF00" },
+            { code: "TUR", name: "Turkey", flag: "🇹🇷", type: "crescent", p: "#E30A17", s: "#FFFFFF" },
+            { code: "KSA", name: "Saudi Arabia", flag: "🇸🇦", type: "sym", p: "#006C35", s: "#FFFFFF", sym: "⚔️" },
+            { code: "UAE", name: "UAE", flag: "🇦🇪", type: "uae", p: "#00732F", m: "#FFFFFF", s: "#000000", side: "#FF0000" },
+            { code: "PAK", name: "Pakistan", flag: "🇵🇰", type: "pakistan", p: "#115740", s: "#FFFFFF" },
+            { code: "BAN", name: "Bangladesh", flag: "🇧🇩", type: "bangladesh", p: "#006A4E", s: "#F42A41" },
+            { code: "CAN", name: "Canada", flag: "🇨🇦", type: "canada", p: "#FF0000", s: "#FFFFFF" },
+            { code: "AUS", name: "Australia", flag: "🇦🇺", type: "australia", p: "#00008B", s: "#FF0000" },
+            { code: "SGP", name: "Singapore", flag: "🇸🇬", type: "h2", p: "#ED2939", s: "#FFFFFF" },
+            { code: "THA", name: "Thailand", flag: "🇹🇭", type: "thailand", p: "#A51931", m: "#2D2A4A", s: "#FFFFFF" },
+            { code: "VNM", name: "Vietnam", flag: "🇻🇳", type: "star-solid", p: "#DA251D", s: "#FFFF00" },
+            { code: "IDN", name: "Indonesia", flag: "🇮🇩", type: "h2", p: "#FF0000", s: "#FFFFFF" },
+            { code: "MYS", name: "Malaysia", flag: "🇲🇾", type: "usa", p: "#CC0001", s: "#010066" },
+            { code: "PHL", name: "Philippines", flag: "🇵🇭", type: "wedge", p: "#CE1126", s: "#0038A8", w: "#FFFFFF" },
+            { code: "MEX", name: "Mexico", flag: "🇲🇽", type: "v3", p: "#006847", m: "#FFFFFF", s: "#CE1126" },
+            { code: "COL", name: "Colombia", flag: "🇨🇴", type: "colombia", p: "#FCD116", m: "#003893", s: "#CE1126" },
+            { code: "CHL", name: "Chile", flag: "🇨🇱", type: "h2", p: "#FFFFFF", s: "#D52B1E" },
+            { code: "PER", name: "Peru", flag: "🇵🇪", type: "v3", p: "#D91023", m: "#FFFFFF", s: "#D91023" },
+            { code: "NED", name: "Netherlands", flag: "🇳🇱", type: "h3", p: "#AE1C28", m: "#FFFFFF", s: "#21468B" },
+            { code: "SUI", name: "Switzerland", flag: "🇨🇭", type: "swiss", p: "#DA291C", s: "#FFFFFF" },
+            { code: "SWE", name: "Sweden", flag: "🇸🇪", type: "nordic", p: "#006AA7", s: "#FECC00" },
+            { code: "NOR", name: "Norway", flag: "🇳🇴", type: "nordic", p: "#BA0C2F", s: "#00205B" },
+            { code: "POL", name: "Poland", flag: "🇵🇱", type: "h2", p: "#FFFFFF", s: "#DC143C" },
+            { code: "UKR", name: "Ukraine", flag: "🇺🇦", type: "h2", p: "#0057B7", s: "#FFDD00" },
+            { code: "IRL", name: "Ireland", flag: "🇮🇪", type: "v3", p: "#169B62", m: "#FFFFFF", s: "#FF883E" },
+            { code: "BEL", name: "Belgium", flag: "🇧🇪", type: "v3", p: "#000000", m: "#FDDA24", s: "#EF3340" },
+            { code: "EGY", name: "Egypt", flag: "🇪🇬", type: "h3", p: "#C8102E", m: "#FFFFFF", s: "#000000" },
+            { code: "NGA", name: "Nigeria", flag: "🇳🇬", type: "v3", p: "#008751", m: "#FFFFFF", s: "#008751" },
+            { code: "RSA", name: "South Africa", flag: "🇿🇦", type: "h3", p: "#DE3831", m: "#007A4D", s: "#002395" },
+            { code: "MAR", name: "Morocco", flag: "🇲🇦", type: "sym", p: "#C1272D", s: "#006233", sym: "★" },
+            { code: "GHA", name: "Ghana", flag: "🇬🇭", type: "h3", p: "#D31034", m: "#FFD100", s: "#006B3F" },
+            { code: "QAT", name: "Qatar", flag: "🇶🇦", type: "uae", p: "#8D1B3D", m: "#8D1B3D", s: "#8D1B3D", side: "#FFFFFF" },
+            { code: "IRN", name: "Iran", flag: "🇮🇷", type: "h3", p: "#239F40", m: "#FFFFFF", s: "#DA0000" },
+            { code: "NPL", name: "Nepal", flag: "🇳🇵", type: "sym", p: "#DC143C", s: "#FFFFFF", sym: "☀️" }
         ];
 
-        // ==========================================
-        // 3. CANVAS & ARENA GEOMETRY
-        // ==========================================
-        const canvas = document.getElementById('arenaCanvas');
-        const ctx = canvas.getContext('2d');
-
-        const CANVAS_SIZE = 380;
-        const CENTER_X = CANVAS_SIZE / 2;
-        const CENTER_Y = CANVAS_SIZE / 2;
-        const ARENA_RADIUS = 176;
-        const CENTER_RING_RADIUS = 46;
-        const BALL_RADIUS = 15.5;
-
-        // 6 Inward-Pointing Purple Radial Obstacle Bars
-        const OBSTACLE_BARS = [];
-        for (let i = 0; i < 6; i++) {
-            const angle = (i / 6) * Math.PI * 2 + 0.25;
-            const startDist = ARENA_RADIUS - 8;
-            const endDist = ARENA_RADIUS - 74;
-            OBSTACLE_BARS.push({
-                x1: CENTER_X + Math.cos(angle) * startDist,
-                y1: CENTER_Y + Math.sin(angle) * startDist,
-                x2: CENTER_X + Math.cos(angle) * endDist,
-                y2: CENTER_Y + Math.sin(angle) * endDist,
-                width: 9.5
-            });
-        }
-
-        let balls = [];
-        let eliminatedCount = 0;
-        let particles = [];
-        let shockwaves = [];
-        let supportStats = {};
-        let isPaused = false;
-        let autoChatActive = true;
-        let roundNumber = 1;
-
-        // Timers
-        const ROUND_DURATION = 5.0;
-        let countdownTimer = ROUND_DURATION;
-        let lastSecondBeep = 5;
-
-        const BANNER_DURATION = 1.0;
-        let bannerActive = false;
-        let bannerRemaining = 0;
-
-        const AUTO_RESTART_DURATION = 3.0;
-        let championLoopActive = false;
-        let championRemaining = 0;
-
-        let lastTimestamp = performance.now();
-
-        // Crisp Vector Flag Renderer
-        function drawVectorFlag(ctx, r, c) {
+        function drawFlagCircle(ctx, r, c) {
             ctx.save();
             ctx.beginPath();
             ctx.arc(0, 0, r, 0, Math.PI * 2);
@@ -1263,11 +1089,12 @@
                     ctx.fillStyle = "#FF9933"; ctx.fillRect(-r, -r, r * 2, r * 0.67);
                     ctx.fillStyle = "#FFFFFF"; ctx.fillRect(-r, -r * 0.33, r * 2, r * 0.67);
                     ctx.fillStyle = "#138808"; ctx.fillRect(-r, r * 0.34, r * 2, r * 0.67);
-                    ctx.strokeStyle = "#000080"; ctx.lineWidth = 1.3;
+                    ctx.strokeStyle = "#000080"; ctx.lineWidth = 1.2;
                     ctx.beginPath(); ctx.arc(0, 0, r * 0.28, 0, Math.PI * 2); ctx.stroke();
-                    for (let s = 0; s < 12; s++) {
-                        const a = (s / 12) * Math.PI * 2;
-                        ctx.beginPath(); ctx.moveTo(0, 0);
+                    for (let i = 0; i < 12; i++) {
+                        const a = (i / 12) * Math.PI * 2;
+                        ctx.beginPath();
+                        ctx.moveTo(0, 0);
                         ctx.lineTo(Math.cos(a) * r * 0.28, Math.sin(a) * r * 0.28);
                         ctx.stroke();
                     }
@@ -1288,8 +1115,7 @@
                     ctx.moveTo(0, -r * 0.78); ctx.lineTo(r * 0.82, 0);
                     ctx.lineTo(0, r * 0.78); ctx.lineTo(-r * 0.82, 0);
                     ctx.closePath(); ctx.fill();
-                    ctx.fillStyle = "#002776";
-                    ctx.beginPath(); ctx.arc(0, 0, r * 0.38, 0, Math.PI * 2); ctx.fill();
+                    ctx.fillStyle = "#002776"; ctx.beginPath(); ctx.arc(0, 0, r * 0.38, 0, Math.PI * 2); ctx.fill();
                     break;
 
                 case 'argentina':
@@ -1306,10 +1132,10 @@
 
                 case 'usa':
                     for (let s = 0; s < 7; s++) {
-                        ctx.fillStyle = s % 2 === 0 ? "#B22234" : "#FFFFFF";
+                        ctx.fillStyle = s % 2 === 0 ? c.p : "#FFFFFF";
                         ctx.fillRect(-r, -r + s * (r * 2 / 7), r * 2, r * 2 / 7);
                     }
-                    ctx.fillStyle = "#3C3B6E"; ctx.fillRect(-r, -r, r, r);
+                    ctx.fillStyle = c.s; ctx.fillRect(-r, -r, r, r);
                     ctx.fillStyle = "#FFFFFF"; ctx.font = `bold ${r * 0.55}px sans-serif`;
                     ctx.textAlign = "center"; ctx.textBaseline = "middle";
                     ctx.fillText("★", -r * 0.5, -r * 0.5);
@@ -1338,12 +1164,11 @@
                     ctx.fillStyle = "#0047A0"; ctx.beginPath(); ctx.arc(0, 0, r * 0.46, 0, Math.PI); ctx.fill();
                     break;
 
-                case 'china':
-                case 'vietnam':
-                    ctx.fillStyle = c.primary; ctx.fillRect(-r, -r, r * 2, r * 2);
-                    ctx.fillStyle = c.sec; ctx.font = `bold ${r * 0.9}px sans-serif`;
+                case 'star-solid':
+                    ctx.fillStyle = c.p; ctx.fillRect(-r, -r, r * 2, r * 2);
+                    ctx.fillStyle = c.s; ctx.font = `bold ${r * 0.9}px sans-serif`;
                     ctx.textAlign = "center"; ctx.textBaseline = "middle";
-                    ctx.fillText("★", c.type === 'china' ? -r * 0.3 : 0, c.type === 'china' ? -r * 0.25 : 0);
+                    ctx.fillText("★", c.code === 'CHN' ? -r * 0.3 : 0, c.code === 'CHN' ? -r * 0.25 : 0);
                     break;
 
                 case 'spain':
@@ -1351,15 +1176,15 @@
                     ctx.fillStyle = "#F1BF00"; ctx.fillRect(-r, -r * 0.45, r * 2, r * 0.9);
                     break;
 
-                case 'turkey':
+                case 'crescent':
                 case 'pakistan':
-                    ctx.fillStyle = c.primary; ctx.fillRect(-r, -r, r * 2, r * 2);
+                    ctx.fillStyle = c.p; ctx.fillRect(-r, -r, r * 2, r * 2);
                     if (c.type === 'pakistan') {
                         ctx.fillStyle = "#FFFFFF"; ctx.fillRect(-r, -r, r * 0.5, r * 2);
                     }
                     ctx.fillStyle = "#FFFFFF";
                     ctx.beginPath(); ctx.arc(c.type === 'pakistan' ? r * 0.15 : -r * 0.1, 0, r * 0.42, 0, Math.PI * 2); ctx.fill();
-                    ctx.fillStyle = c.primary;
+                    ctx.fillStyle = c.p;
                     ctx.beginPath(); ctx.arc(c.type === 'pakistan' ? r * 0.27 : r * 0.02, -r * 0.05, r * 0.34, 0, Math.PI * 2); ctx.fill();
                     break;
 
@@ -1377,8 +1202,7 @@
                 case 'australia':
                     ctx.fillStyle = "#00008B"; ctx.fillRect(-r, -r, r * 2, r * 2);
                     ctx.fillStyle = "#FF0000"; ctx.fillRect(-r, -r, r * 0.9, r * 0.9);
-                    ctx.fillStyle = "#FFFFFF";
-                    ctx.beginPath(); ctx.arc(r * 0.4, r * 0.35, r * 0.15, 0, Math.PI * 2); ctx.fill();
+                    ctx.fillStyle = "#FFFFFF"; ctx.beginPath(); ctx.arc(r * 0.4, r * 0.35, r * 0.15, 0, Math.PI * 2); ctx.fill();
                     break;
 
                 case 'thailand':
@@ -1388,9 +1212,9 @@
                     break;
 
                 case 'uae':
-                    ctx.fillStyle = c.primary; ctx.fillRect(-r, -r, r * 2, r * 0.67);
-                    ctx.fillStyle = c.mid; ctx.fillRect(-r, -r * 0.33, r * 2, r * 0.67);
-                    ctx.fillStyle = c.sec; ctx.fillRect(-r, r * 0.34, r * 2, r * 0.67);
+                    ctx.fillStyle = c.p; ctx.fillRect(-r, -r, r * 2, r * 0.67);
+                    ctx.fillStyle = c.m; ctx.fillRect(-r, -r * 0.33, r * 2, r * 0.67);
+                    ctx.fillStyle = c.s; ctx.fillRect(-r, r * 0.34, r * 2, r * 0.67);
                     ctx.fillStyle = c.side; ctx.fillRect(-r, -r, r * 0.55, r * 2);
                     break;
 
@@ -1402,53 +1226,53 @@
                     break;
 
                 case 'nordic':
-                    ctx.fillStyle = c.primary; ctx.fillRect(-r, -r, r * 2, r * 2);
-                    ctx.fillStyle = c.sec;
+                    ctx.fillStyle = c.p; ctx.fillRect(-r, -r, r * 2, r * 2);
+                    ctx.fillStyle = c.s;
                     ctx.fillRect(-r * 0.35, -r, r * 0.32, r * 2);
                     ctx.fillRect(-r, -r * 0.16, r * 2, r * 0.32);
                     break;
 
                 case 'colombia':
-                    ctx.fillStyle = c.primary; ctx.fillRect(-r, -r, r * 2, r);
-                    ctx.fillStyle = c.mid; ctx.fillRect(-r, 0, r * 2, r * 0.5);
-                    ctx.fillStyle = c.sec; ctx.fillRect(-r, r * 0.5, r * 2, r * 0.5);
+                    ctx.fillStyle = c.p; ctx.fillRect(-r, -r, r * 2, r);
+                    ctx.fillStyle = c.m; ctx.fillRect(-r, 0, r * 2, r * 0.5);
+                    ctx.fillStyle = c.s; ctx.fillRect(-r, r * 0.5, r * 2, r * 0.5);
                     break;
 
-                case 'czech':
-                    ctx.fillStyle = c.sec; ctx.fillRect(-r, -r, r * 2, r);
-                    ctx.fillStyle = c.primary; ctx.fillRect(-r, 0, r * 2, r);
-                    ctx.fillStyle = c.wedge;
+                case 'wedge':
+                    ctx.fillStyle = c.s; ctx.fillRect(-r, -r, r * 2, r);
+                    ctx.fillStyle = c.p; ctx.fillRect(-r, 0, r * 2, r);
+                    ctx.fillStyle = c.w;
                     ctx.beginPath(); ctx.moveTo(-r, -r); ctx.lineTo(0, 0); ctx.lineTo(-r, r); ctx.closePath(); ctx.fill();
                     break;
 
-                case 'h-tricolor':
-                    ctx.fillStyle = c.primary; ctx.fillRect(-r, -r, r * 2, r * 0.67);
-                    ctx.fillStyle = c.mid; ctx.fillRect(-r, -r * 0.33, r * 2, r * 0.67);
-                    ctx.fillStyle = c.sec; ctx.fillRect(-r, r * 0.34, r * 2, r * 0.67);
+                case 'h3':
+                    ctx.fillStyle = c.p; ctx.fillRect(-r, -r, r * 2, r * 0.67);
+                    ctx.fillStyle = c.m; ctx.fillRect(-r, -r * 0.33, r * 2, r * 0.67);
+                    ctx.fillStyle = c.s; ctx.fillRect(-r, r * 0.34, r * 2, r * 0.67);
                     break;
 
-                case 'v-tricolor':
-                    ctx.fillStyle = c.primary; ctx.fillRect(-r, -r, r * 0.67, r * 2);
-                    ctx.fillStyle = c.mid; ctx.fillRect(-r * 0.33, -r, r * 0.67, r * 2);
-                    ctx.fillStyle = c.sec; ctx.fillRect(r * 0.34, -r, r * 0.67, r * 2);
+                case 'v3':
+                    ctx.fillStyle = c.p; ctx.fillRect(-r, -r, r * 0.67, r * 2);
+                    ctx.fillStyle = c.m; ctx.fillRect(-r * 0.33, -r, r * 0.67, r * 2);
+                    ctx.fillStyle = c.s; ctx.fillRect(r * 0.34, -r, r * 0.67, r * 2);
                     break;
 
-                case 'h-bicolor':
-                    ctx.fillStyle = c.primary; ctx.fillRect(-r, -r, r * 2, r);
-                    ctx.fillStyle = c.sec; ctx.fillRect(-r, 0, r * 2, r);
+                case 'h2':
+                    ctx.fillStyle = c.p; ctx.fillRect(-r, -r, r * 2, r);
+                    ctx.fillStyle = c.s; ctx.fillRect(-r, 0, r * 2, r);
                     break;
 
                 default:
-                    ctx.fillStyle = c.primary; ctx.fillRect(-r, -r, r * 2, r * 2);
-                    ctx.fillStyle = c.sec; ctx.font = `bold ${r * 0.85}px sans-serif`;
+                    ctx.fillStyle = c.p; ctx.fillRect(-r, -r, r * 2, r * 2);
+                    ctx.fillStyle = c.s; ctx.font = `bold ${r * 0.85}px sans-serif`;
                     ctx.textAlign = "center"; ctx.textBaseline = "middle";
                     ctx.fillText(c.sym || "★", 0, 0);
                     break;
             }
 
-            // 3D Glossy Marble Sphere Shading
+            // Glossy 3D Marble Sphere Shading
             const gloss = ctx.createLinearGradient(-r, -r, r, r);
-            gloss.addColorStop(0, "rgba(255,255,255,0.58)");
+            gloss.addColorStop(0, "rgba(255,255,255,0.60)");
             gloss.addColorStop(0.32, "rgba(255,255,255,0.08)");
             gloss.addColorStop(0.75, "rgba(0,0,0,0.08)");
             gloss.addColorStop(1, "rgba(0,0,0,0.48)");
@@ -1460,382 +1284,400 @@
             ctx.restore();
         }
 
-        // ==========================================
-        // 4. INITIALIZE & RESET GAME STATE
-        // ==========================================
-        function initBalls() {
+        /* ==========================================================================
+           SECTION 3: ARENA GEOMETRY, PHYSICS & TIMERS
+           ========================================================================== */
+        const canvas = document.getElementById('arenaCanvas');
+        const ctx = canvas.getContext('2d');
+
+        const SIZE = 400;
+        const CX = SIZE / 2;
+        const CY = SIZE / 2;
+        const OUTER_R = 186;
+        const DANGER_R = 48;
+        const FLAG_R = 15.5;
+
+        // 6 Purple Radial Obstacle Bars projecting inward from perimeter
+        const PURPLE_BARS = [];
+        for (let i = 0; i < 6; i++) {
+            const ang = (i / 6) * Math.PI * 2 + 0.26;
+            const rStart = OUTER_R - 7;
+            const rEnd = OUTER_R - 78;
+            PURPLE_BARS.push({
+                x1: CX + Math.cos(ang) * rStart,
+                y1: CY + Math.sin(ang) * rStart,
+                x2: CX + Math.cos(ang) * rEnd,
+                y2: CY + Math.sin(ang) * rEnd,
+                thickness: 9.5
+            });
+        }
+
+        let balls = [];
+        let particles = [];
+        let shockwaves = [];
+        let isPaused = false;
+        let autoChatOn = true;
+
+        // Round & Elimination Timers
+        const ELIM_INTERVAL = 5.0;
+        let roundTimer = ELIM_INTERVAL;
+        let lastBeepSec = 5;
+
+        const POPUP_DURATION = 1.0;
+        let popupActive = false;
+        let popupTimer = 0;
+
+        const CHAMPION_DURATION = 3.0;
+        let champActive = false;
+        let champTimer = 0;
+
+        let prevTime = performance.now();
+
+        function setupArena() {
             balls = [];
-            eliminatedCount = 0;
             particles = [];
             shockwaves = [];
 
-            countdownTimer = ROUND_DURATION;
-            lastSecondBeep = 5;
+            roundTimer = ELIM_INTERVAL;
+            lastBeepSec = 5;
 
-            bannerActive = false;
-            bannerRemaining = 0;
-            document.getElementById('elimBannerContainer').style.display = 'none';
+            popupActive = false;
+            popupTimer = 0;
+            document.getElementById('elimBanner').style.display = 'none';
 
-            championLoopActive = false;
-            championRemaining = 0;
-            document.getElementById('winnerModal').style.display = 'none';
+            champActive = false;
+            champTimer = 0;
+            document.getElementById('championOverlay').style.display = 'none';
 
-            supportStats = {};
-            COUNTRIES_DB.forEach(c => {
-                supportStats[c.name] = Math.floor(Math.random() * 14) + 3;
-            });
-
-            COUNTRIES_DB.forEach((country, index) => {
-                const angle = (index / COUNTRIES_DB.length) * Math.PI * 2;
-                const dist = 60 + Math.random() * (ARENA_RADIUS - 86);
-                const x = CENTER_X + Math.cos(angle) * dist;
-                const y = CENTER_Y + Math.sin(angle) * dist;
-
-                const speed = 0.75 + Math.random() * 0.55;
-                const moveAngle = Math.random() * Math.PI * 2;
+            COUNTRIES.forEach((country, idx) => {
+                const angle = (idx / COUNTRIES.length) * Math.PI * 2;
+                const dist = 65 + Math.random() * (OUTER_R - 92);
+                const speed = 0.70 + Math.random() * 0.60;
+                const dir = Math.random() * Math.PI * 2;
 
                 balls.push({
-                    id: index,
-                    country: country,
-                    x: x,
-                    y: y,
-                    vx: Math.cos(moveAngle) * speed,
-                    vy: Math.sin(moveAngle) * speed,
-                    radius: BALL_RADIUS,
-                    shieldTime: 0
+                    country,
+                    x: CX + Math.cos(angle) * dist,
+                    y: CY + Math.sin(angle) * dist,
+                    vx: Math.cos(dir) * speed,
+                    vy: Math.sin(dir) * speed,
+                    r: FLAG_R,
+                    shield: 0
                 });
             });
 
-            updateHUD();
+            updateAliveCounter();
         }
 
-        function closestPointOnSegment(p, a, b) {
+        function updateAliveCounter() {
+            document.getElementById('aliveNum').innerText = balls.length;
+            document.getElementById('totalNum').innerText = COUNTRIES.length;
+        }
+
+        function distToSegment(p, a, b) {
             const abx = b.x - a.x;
             const aby = b.y - a.y;
             const lenSq = abx * abx + aby * aby || 1;
-            let t = ((p.x - a.x) * abx + (p.y - a.y) * aby) / lenSq;
-            t = Math.max(0, Math.min(1, t));
+            const t = Math.max(0, Math.min(1, ((p.x - a.x) * abx + (p.y - a.y) * aby) / lenSq));
             return { x: a.x + abx * t, y: a.y + aby * t };
         }
 
-        // ==========================================
-        // 5. PHYSICS & TIMERS LOOP
-        // ==========================================
-        function updatePhysics(dt) {
-            // Handle 3.0s Auto-Restart Champion Loop
-            if (championLoopActive) {
-                championRemaining -= dt;
-                const pct = Math.max(0, (championRemaining / AUTO_RESTART_DURATION) * 100);
-                document.getElementById('autoRestartBar').style.width = `${pct}%`;
-                document.getElementById('autoRestartText').innerText = `Next round in ${Math.max(0, championRemaining).toFixed(1)}s...`;
+        function stepPhysics(dt) {
+            // 1. 3-Second Champion Showcase & Auto-Restart Loop
+            if (champActive) {
+                champTimer -= dt;
+                const pct = Math.max(0, (champTimer / CHAMPION_DURATION) * 100);
+                document.getElementById('restartBarFill').style.width = `${pct}%`;
+                document.getElementById('restartText').innerText = `Next Round Starts in ${Math.max(0, champTimer).toFixed(1)}s...`;
 
-                if (championRemaining <= 0) {
-                    championLoopActive = false;
-                    roundNumber++;
-                    document.getElementById('roundCounter').innerText = roundNumber;
-                    initBalls();
+                if (champTimer <= 0) {
+                    setupArena();
                 }
                 return;
             }
 
             if (isPaused || balls.length <= 1) return;
 
-            // Handle 1.0s Elimination Banner Countdown
-            if (bannerActive) {
-                bannerRemaining -= dt;
-                const pct = Math.max(0, (bannerRemaining / BANNER_DURATION) * 100);
-                document.getElementById('elimProgressBar').style.width = `${pct}%`;
+            // 2. 1-Second Elimination Banner Countdown
+            if (popupActive) {
+                popupTimer -= dt;
+                const pct = Math.max(0, (popupTimer / POPUP_DURATION) * 100);
+                document.getElementById('elimBarFill').style.width = `${pct}%`;
 
-                if (bannerRemaining <= 0) {
-                    bannerActive = false;
-                    document.getElementById('elimBannerContainer').style.display = 'none';
+                if (popupTimer <= 0) {
+                    popupActive = false;
+                    document.getElementById('elimBanner').style.display = 'none';
                 }
             }
 
-            // Handle 5.0s Elimination Round Countdown
-            countdownTimer -= dt;
-            if (countdownTimer < 0) countdownTimer = 0;
+            // 3. 5.00s Elimination Countdown
+            roundTimer -= dt;
+            if (roundTimer < 0) roundTimer = 0;
 
-            const ceilSec = Math.ceil(countdownTimer);
-            if (ceilSec !== lastSecondBeep && ceilSec >= 1 && ceilSec <= 5) {
-                lastSecondBeep = ceilSec;
-                if (ceilSec <= 2) sfxUrgentTick();
-                else sfxTick();
+            const secCeil = Math.ceil(roundTimer);
+            if (secCeil !== lastBeepSec && secCeil >= 1 && secCeil <= 3) {
+                lastBeepSec = secCeil;
+                playCountdownBeep(secCeil === 1);
             }
 
-            // Find flag closest to center golden circle
-            let closestBall = null;
-            let closestDist = Infinity;
+            // Find single active ball closest to golden center circle
+            let closest = null;
+            let minDist = Infinity;
             for (let i = 0; i < balls.length; i++) {
-                const d = Math.hypot(balls[i].x - CENTER_X, balls[i].y - CENTER_Y);
-                if (d < closestDist) {
-                    closestDist = d;
-                    closestBall = balls[i];
+                const d = Math.hypot(balls[i].x - CX, balls[i].y - CY);
+                if (d < minDist) {
+                    minDist = d;
+                    closest = balls[i];
                 }
             }
 
-            const targetEl = document.getElementById('dangerTargetText');
-            if (closestBall) {
-                const inCore = closestDist <= CENTER_RING_RADIUS ? ' (IN CORE!)' : '';
-                targetEl.innerHTML = `${closestBall.country.flag} ${closestBall.country.name}<span style="color:#fb7185">${inCore}</span>`;
+            if (closest) {
+                document.getElementById('dangerName').innerText = `${closest.country.flag} ${closest.country.name}`;
             }
 
-            // Eliminate strictly ONE country when timer hits 0
-            if (countdownTimer <= 0) {
-                eliminateOneCountry(closestBall);
-                countdownTimer = ROUND_DURATION;
-                lastSecondBeep = 5;
+            // Trigger strict 1-country elimination at 0.00s
+            if (roundTimer <= 0) {
+                eliminateSingleCountry(closest);
+                roundTimer = ELIM_INTERVAL;
+                lastBeepSec = 5;
             }
 
-            // Move & Collide Marbles (Smooth Gentle Motion)
+            // 4. Calm, Smooth Floating Flag Physics
             for (let i = 0; i < balls.length; i++) {
                 const b = balls[i];
-                if (b.shieldTime > 0) b.shieldTime = Math.max(0, b.shieldTime - dt);
+                if (b.shield > 0) b.shield = Math.max(0, b.shield - dt);
 
-                // Gentle drift toward center
-                const dxC = CENTER_X - b.x;
-                const dyC = CENTER_Y - b.y;
-                const distC = Math.hypot(dxC, dyC) || 1;
-                b.vx += (dxC / distC) * 0.24 * dt;
-                b.vy += (dyC / distC) * 0.24 * dt;
+                // Subtle gentle pull toward center so flags orbit smoothly
+                const dx = CX - b.x;
+                const dy = CY - b.y;
+                const dist = Math.hypot(dx, dy) || 1;
+                b.vx += (dx / dist) * 0.22 * dt;
+                b.vy += (dy / dist) * 0.22 * dt;
 
-                // Speed clamping for smooth slow motion
-                b.vx *= 0.993;
-                b.vy *= 0.993;
+                // Velocity cap between 0.5 and 1.6 px/frame
+                b.vx *= 0.994;
+                b.vy *= 0.994;
                 const spd = Math.hypot(b.vx, b.vy);
-                const MAX_SPD = 1.55;
-                const MIN_SPD = 0.55;
-                if (spd > MAX_SPD) {
-                    b.vx = (b.vx / spd) * MAX_SPD;
-                    b.vy = (b.vy / spd) * MAX_SPD;
-                } else if (spd < MIN_SPD) {
-                    b.vx = (b.vx / (spd || 1)) * MIN_SPD;
-                    b.vy = (b.vy / (spd || 1)) * MIN_SPD;
+                if (spd > 1.6) {
+                    b.vx = (b.vx / spd) * 1.6;
+                    b.vy = (b.vy / spd) * 1.6;
+                } else if (spd < 0.5) {
+                    b.vx = (b.vx / (spd || 1)) * 0.5;
+                    b.vy = (b.vy / (spd || 1)) * 0.5;
                 }
 
                 b.x += b.vx * 60 * dt;
                 b.y += b.vy * 60 * dt;
 
-                // Outer Circle Wall Bounce
-                const dCenter = Math.hypot(b.x - CENTER_X, b.y - CENTER_Y);
-                const maxD = ARENA_RADIUS - b.radius;
-                if (dCenter > maxD) {
-                    const nx = (CENTER_X - b.x) / dCenter;
-                    const ny = (CENTER_Y - b.y) / dCenter;
-                    b.x = CENTER_X - nx * maxD;
-                    b.y = CENTER_Y - ny * maxD;
+                // Outer Neon Circle Containment
+                const dCenter = Math.hypot(b.x - CX, b.y - CY);
+                const maxAllowed = OUTER_R - b.r;
+                if (dCenter > maxAllowed) {
+                    const nx = (CX - b.x) / dCenter;
+                    const ny = (CY - b.y) / dCenter;
+                    b.x = CX - nx * maxAllowed;
+                    b.y = CY - ny * maxAllowed;
                     const dot = b.vx * nx + b.vy * ny;
-                    b.vx = (b.vx - 2 * dot * nx) * 0.88;
-                    b.vy = (b.vy - 2 * dot * ny) * 0.88;
-                    if (Math.random() < 0.12) sfxBounce();
+                    b.vx = (b.vx - 2 * dot * nx) * 0.9;
+                    b.vy = (b.vy - 2 * dot * ny) * 0.9;
                 }
 
-                // 6 Purple Radial Obstacle Bars Bounce
-                for (let k = 0; k < OBSTACLE_BARS.length; k++) {
-                    const bar = OBSTACLE_BARS[k];
-                    const cp = closestPointOnSegment(b, { x: bar.x1, y: bar.y1 }, { x: bar.x2, y: bar.y2 });
+                // 6 Purple Radial Obstacle Bars Elastic Bounce
+                for (let k = 0; k < PURPLE_BARS.length; k++) {
+                    const bar = PURPLE_BARS[k];
+                    const cp = distToSegment(b, { x: bar.x1, y: bar.y1 }, { x: bar.x2, y: bar.y2 });
                     const dBar = Math.hypot(b.x - cp.x, b.y - cp.y);
-                    const minD = b.radius + bar.width * 0.5;
-                    if (dBar < minD && dBar > 0) {
+                    const minSep = b.r + bar.thickness * 0.5;
+                    if (dBar < minSep && dBar > 0) {
                         const nx = (b.x - cp.x) / dBar;
                         const ny = (b.y - cp.y) / dBar;
-                        b.x = cp.x + nx * minD;
-                        b.y = cp.y + ny * minD;
+                        b.x = cp.x + nx * minSep;
+                        b.y = cp.y + ny * minSep;
                         const dot = b.vx * nx + b.vy * ny;
-                        b.vx = (b.vx - 2 * dot * nx) * 0.88;
-                        b.vy = (b.vy - 2 * dot * ny) * 0.88;
-                        if (Math.random() < 0.1) sfxBounce();
+                        b.vx = (b.vx - 2 * dot * nx) * 0.9;
+                        b.vy = (b.vy - 2 * dot * ny) * 0.9;
                     }
                 }
 
-                // Ball-to-Ball Elastic Collisions
+                // Ball-to-Ball Smooth Elastic Collisions
                 for (let j = i + 1; j < balls.length; j++) {
                     const b2 = balls[j];
                     const cdx = b2.x - b.x;
                     const cdy = b2.y - b.y;
-                    const distB = Math.hypot(cdx, cdy);
-                    const minDist = b.radius + b2.radius;
+                    const dBall = Math.hypot(cdx, cdy);
+                    const minSep = b.r + b2.r;
 
-                    if (distB < minDist && distB > 0) {
-                        const nx = cdx / distB;
-                        const ny = cdy / distB;
-                        const overlap = 0.5 * (minDist - distB);
+                    if (dBall < minSep && dBall > 0) {
+                        const nx = cdx / dBall;
+                        const ny = cdy / dBall;
+                        const overlap = 0.5 * (minSep - dBall);
                         b.x -= nx * overlap;
                         b.y -= ny * overlap;
                         b2.x += nx * overlap;
                         b2.y += ny * overlap;
 
-                        const kx = b.vx - b2.vx;
-                        const ky = b.vy - b2.vy;
-                        const p = nx * kx + ny * ky;
-                        b.vx -= p * nx * 0.9;
-                        b.vy -= p * ny * 0.9;
-                        b2.vx += p * nx * 0.9;
-                        b2.vy += p * ny * 0.9;
+                        const rvx = b.vx - b2.vx;
+                        const rvy = b.vy - b2.vy;
+                        const imp = nx * rvx + ny * rvy;
+                        b.vx -= imp * nx * 0.92;
+                        b.vy -= imp * ny * 0.92;
+                        b2.vx += imp * nx * 0.92;
+                        b2.vy += imp * ny * 0.92;
                     }
                 }
             }
 
-            // Update Particles & Shockwaves
+            // Update Explosion Particles & Shockwaves
             for (let i = particles.length - 1; i >= 0; i--) {
                 const p = particles[i];
                 p.x += p.vx * 60 * dt;
                 p.y += p.vy * 60 * dt;
-                p.life -= dt * 1.6;
+                p.life -= dt * 1.7;
                 if (p.life <= 0) particles.splice(i, 1);
             }
 
             for (let i = shockwaves.length - 1; i >= 0; i--) {
                 const s = shockwaves[i];
-                s.r += s.speed * 60 * dt;
-                s.alpha -= dt * 2.1;
+                s.r += s.spd * 60 * dt;
+                s.alpha -= dt * 2.2;
                 if (s.alpha <= 0) shockwaves.splice(i, 1);
             }
         }
 
-        function eliminateOneCountry(targetBall) {
-            if (!targetBall || balls.length <= 1) return;
+        function eliminateSingleCountry(target) {
+            if (!target || balls.length <= 1) return;
 
-            // Shield saves the country once and pushes it away from center
-            if (targetBall.shieldTime > 0) {
-                targetBall.shieldTime = 0;
-                const ang = Math.atan2(targetBall.y - CENTER_Y, targetBall.x - CENTER_X);
-                targetBall.vx = Math.cos(ang) * 3.0;
-                targetBall.vy = Math.sin(ang) * 3.0;
-                sfxShield();
-                spawnShockwave(targetBall.x, targetBall.y, '#22d3ee');
-                addChatMessage("System", `🛡️ ${targetBall.country.name}'s Shield blocked elimination!`);
+            // Active Shield protects the country once and repels it outward
+            if (target.shield > 0) {
+                target.shield = 0;
+                const ang = Math.atan2(target.y - CY, target.x - CX);
+                target.vx = Math.cos(ang) * 2.8;
+                target.vy = Math.sin(ang) * 2.8;
+                playShieldSfx();
+                shockwaves.push({ x: target.x, y: target.y, r: 8, spd: 5.5, color: '#22d3ee', alpha: 1 });
+                updateChatTicker("System", `🛡️ ${target.country.flag} ${target.country.name}'s Shield deflected the strike!`);
                 return;
             }
 
-            const idx = balls.indexOf(targetBall);
+            const idx = balls.indexOf(target);
             if (idx !== -1) {
                 balls.splice(idx, 1);
-                eliminatedCount++;
             }
 
-            // Screen Shake & Explosion
-            const frame = document.getElementById('streamFrame');
-            frame.classList.add('shake-active');
-            setTimeout(() => frame.classList.remove('shake-active'), 350);
+            // Screen Shake + Bass Thump + Particles
+            const appEl = document.getElementById('appContainer');
+            appEl.classList.add('shake');
+            setTimeout(() => appEl.classList.remove('shake'), 350);
 
-            sfxExplosion();
-            spawnParticles(targetBall.x, targetBall.y, targetBall.country.primary, 32);
-            spawnShockwave(targetBall.x, targetBall.y, '#ef4444');
-            spawnShockwave(CENTER_X, CENTER_Y, '#facc15');
-
-            // 1.0s Elimination Popup Banner
-            document.getElementById('elimCountryFlag').innerText = targetBall.country.flag;
-            document.getElementById('elimCountryName').innerText = targetBall.country.name;
-            document.getElementById('elimProgressBar').style.width = '100%';
-            document.getElementById('elimBannerContainer').style.display = 'flex';
-            bannerActive = true;
-            bannerRemaining = BANNER_DURATION;
-
-            updateHUD();
-
-            // Check if only 1 Champion remains
-            if (balls.length === 1) {
-                startChampionAutoRestart(balls[0]);
-            }
-        }
-
-        function startChampionAutoRestart(winnerBall) {
-            sfxFanfare();
-            document.getElementById('winnerFlagBadge').innerText = winnerBall.country.flag;
-            document.getElementById('winnerCountryName').innerText = winnerBall.country.name;
-            document.getElementById('autoRestartBar').style.width = '100%';
-            document.getElementById('autoRestartText').innerText = 'Next round in 3.0s...';
-            document.getElementById('winnerModal').style.display = 'flex';
-
-            championLoopActive = true;
-            championRemaining = AUTO_RESTART_DURATION;
-        }
-
-        function spawnParticles(x, y, color, count) {
-            for (let i = 0; i < count; i++) {
+            playEliminationBass();
+            for (let i = 0; i < 30; i++) {
                 const a = Math.random() * Math.PI * 2;
-                const spd = 1.5 + Math.random() * 4.5;
+                const sp = 1.5 + Math.random() * 4.2;
                 particles.push({
-                    x, y,
-                    vx: Math.cos(a) * spd,
-                    vy: Math.sin(a) * spd,
-                    color,
-                    size: 2.5 + Math.random() * 3.5,
+                    x: target.x,
+                    y: target.y,
+                    vx: Math.cos(a) * sp,
+                    vy: Math.sin(a) * sp,
+                    color: target.country.p,
+                    size: 2.5 + Math.random() * 3,
                     life: 1.0
                 });
             }
+            shockwaves.push({ x: target.x, y: target.y, r: 8, spd: 5.5, color: '#ef4444', alpha: 1 });
+            shockwaves.push({ x: CX, y: CY, r: 10, spd: 4.5, color: '#facc15', alpha: 1 });
+
+            // 1.0-Second Elimination Popup Banner
+            document.getElementById('elimText').innerText = `ELIMINATED: ${target.country.flag} ${target.country.name}`;
+            document.getElementById('elimBarFill').style.width = '100%';
+            document.getElementById('elimBanner').style.display = 'block';
+            popupActive = true;
+            popupTimer = POPUP_DURATION;
+
+            updateAliveCounter();
+
+            // Check if final 1 Champion remains
+            if (balls.length === 1) {
+                triggerChampionScreen(balls[0]);
+            }
         }
 
-        function spawnShockwave(x, y, color) {
-            shockwaves.push({ x, y, r: 8, speed: 5.5, color, alpha: 1.0 });
+        function triggerChampionScreen(winner) {
+            playChampionFanfare();
+            document.getElementById('champFlag').innerText = winner.country.flag;
+            document.getElementById('champName').innerText = winner.country.name;
+            document.getElementById('restartBarFill').style.width = '100%';
+            document.getElementById('restartText').innerText = 'Next Round Starts in 3.0s...';
+            document.getElementById('championOverlay').style.display = 'flex';
+
+            champActive = true;
+            champTimer = CHAMPION_DURATION;
         }
 
-        // ==========================================
-        // 6. CANVAS RENDERING
-        // ==========================================
-        function render() {
-            ctx.clearRect(0, 0, CANVAS_SIZE, CANVAS_SIZE);
+        /* ==========================================================================
+           SECTION 4: CANVAS RENDERING
+           ========================================================================== */
+        function drawArena() {
+            ctx.clearRect(0, 0, SIZE, SIZE);
 
-            // Outer Arena Disc
+            // 1. Large Enclosed Neon Cyan Outer Circle
             ctx.save();
             ctx.beginPath();
-            ctx.arc(CENTER_X, CENTER_Y, ARENA_RADIUS, 0, Math.PI * 2);
-            ctx.fillStyle = "#020617";
+            ctx.arc(CX, CY, OUTER_R, 0, Math.PI * 2);
+            ctx.fillStyle = "rgba(2, 6, 23, 0.88)";
             ctx.fill();
             ctx.lineWidth = 5;
-            ctx.strokeStyle = "#06b6d4";
+            ctx.strokeStyle = "#22d3ee";
             ctx.shadowColor = "#06b6d4";
-            ctx.shadowBlur = 15;
+            ctx.shadowBlur = 16;
             ctx.stroke();
             ctx.restore();
 
-            // Central Golden Danger Core Ring
+            // 2. Glowing Golden Inner Ring (Danger Core)
             ctx.save();
             ctx.beginPath();
-            ctx.arc(CENTER_X, CENTER_Y, CENTER_RING_RADIUS, 0, Math.PI * 2);
-            ctx.fillStyle = "rgba(49, 46, 129, 0.7)";
+            ctx.arc(CX, CY, DANGER_R, 0, Math.PI * 2);
+            ctx.fillStyle = "rgba(49, 46, 129, 0.65)";
             ctx.fill();
             ctx.lineWidth = 4;
             ctx.strokeStyle = "#facc15";
             ctx.shadowColor = "#eab308";
-            ctx.shadowBlur = 12;
+            ctx.shadowBlur = 14;
             ctx.stroke();
 
-            // Rotating radar lines inside golden core
-            const rot = performance.now() * 0.0007;
+            // Subtle rotating radar crosshairs inside Danger Core
+            const rot = performance.now() * 0.0008;
             ctx.lineWidth = 1;
             ctx.strokeStyle = "rgba(250, 204, 21, 0.25)";
-            for (let a = 0; a < 4; a++) {
-                const ang = rot + (a / 4) * Math.PI * 2;
+            for (let i = 0; i < 4; i++) {
+                const a = rot + (i / 4) * Math.PI * 2;
                 ctx.beginPath();
-                ctx.moveTo(CENTER_X, CENTER_Y);
-                ctx.lineTo(CENTER_X + Math.cos(ang) * CENTER_RING_RADIUS, CENTER_Y + Math.sin(ang) * CENTER_RING_RADIUS);
+                ctx.moveTo(CX, CY);
+                ctx.lineTo(CX + Math.cos(a) * DANGER_R, CY + Math.sin(a) * DANGER_R);
                 ctx.stroke();
             }
             ctx.restore();
 
-            // 6 Purple Radial Obstacle Bars
-            for (let i = 0; i < OBSTACLE_BARS.length; i++) {
-                const bar = OBSTACLE_BARS[i];
+            // 3. 6 Purple Radial Obstacle Bars
+            for (let i = 0; i < PURPLE_BARS.length; i++) {
+                const bar = PURPLE_BARS[i];
                 ctx.save();
                 ctx.beginPath();
                 ctx.moveTo(bar.x1, bar.y1);
                 ctx.lineTo(bar.x2, bar.y2);
-                ctx.lineWidth = bar.width;
+                ctx.lineWidth = bar.thickness;
                 ctx.lineCap = "round";
                 ctx.strokeStyle = "#7c3aed";
-                ctx.shadowColor = "#6366f1";
-                ctx.shadowBlur = 8;
+                ctx.shadowColor = "#8b5cf6";
+                ctx.shadowBlur = 10;
                 ctx.stroke();
 
                 ctx.lineWidth = 3;
-                ctx.strokeStyle = "#a78bfa";
+                ctx.strokeStyle = "#c4b5fd";
                 ctx.stroke();
                 ctx.restore();
             }
 
-            // Shockwaves & Particles
+            // 4. Shockwaves & Particles
             shockwaves.forEach(s => {
                 ctx.save();
                 ctx.globalAlpha = Math.max(0, s.alpha);
@@ -1857,222 +1699,207 @@
                 ctx.restore();
             });
 
-            // Closest Target Lock Line
-            let closestBall = null;
-            let closestDist = Infinity;
-            balls.forEach(b => {
-                const d = Math.hypot(b.x - CENTER_X, b.y - CENTER_Y);
-                if (d < closestDist) {
-                    closestDist = d;
-                    closestBall = b;
+            // Identify closest ball for subtle danger indicator
+            let closest = null;
+            let minDist = Infinity;
+            for (let i = 0; i < balls.length; i++) {
+                const d = Math.hypot(balls[i].x - CX, balls[i].y - CY);
+                if (d < minDist) {
+                    minDist = d;
+                    closest = balls[i];
                 }
-            });
+            }
 
-            if (closestBall && countdownTimer <= 2.2) {
+            if (closest && roundTimer <= 2.5) {
                 ctx.save();
                 ctx.beginPath();
-                ctx.moveTo(CENTER_X, CENTER_Y);
-                ctx.lineTo(closestBall.x, closestBall.y);
-                ctx.strokeStyle = `rgba(244, 63, 94, ${0.45 + Math.sin(performance.now() * 0.02) * 0.35})`;
+                ctx.moveTo(CX, CY);
+                ctx.lineTo(closest.x, closest.y);
+                ctx.strokeStyle = "rgba(244, 63, 94, 0.55)";
                 ctx.lineWidth = 2;
                 ctx.setLineDash([4, 4]);
                 ctx.stroke();
                 ctx.restore();
             }
 
-            // Render Flag Marbles
+            // 5. Render Flag Circles & Country Codes
             for (let i = 0; i < balls.length; i++) {
-                const ball = balls[i];
-                const isTarget = ball === closestBall;
+                const b = balls[i];
+                const isTarget = b === closest;
 
                 ctx.save();
-                ctx.translate(ball.x, ball.y);
+                ctx.translate(b.x, b.y);
 
+                // Target ring highlight
                 if (isTarget) {
                     ctx.beginPath();
-                    ctx.arc(0, 0, ball.radius + 4, 0, Math.PI * 2);
+                    ctx.arc(0, 0, b.r + 3.5, 0, Math.PI * 2);
                     ctx.strokeStyle = "#f43f5e";
-                    ctx.lineWidth = 2.5;
-                    ctx.shadowColor = "#f43f5e";
-                    ctx.shadowBlur = 10;
+                    ctx.lineWidth = 2.2;
                     ctx.stroke();
                 }
 
-                if (ball.shieldTime > 0) {
+                // Shield aura
+                if (b.shield > 0) {
                     ctx.beginPath();
-                    ctx.arc(0, 0, ball.radius + 5, 0, Math.PI * 2);
+                    ctx.arc(0, 0, b.r + 4.5, 0, Math.PI * 2);
                     ctx.fillStyle = "rgba(34, 211, 238, 0.25)";
                     ctx.fill();
-                    ctx.lineWidth = 2;
                     ctx.strokeStyle = "#22d3ee";
+                    ctx.lineWidth = 2;
                     ctx.stroke();
                 }
 
-                drawVectorFlag(ctx, ball.radius, ball.country);
+                // Crisp Vector Flag
+                drawFlagCircle(ctx, b.r, b.country);
 
+                // Marble Rim
                 ctx.beginPath();
-                ctx.arc(0, 0, ball.radius, 0, Math.PI * 2);
-                ctx.lineWidth = 1.4;
+                ctx.arc(0, 0, b.r, 0, Math.PI * 2);
+                ctx.lineWidth = 1.2;
                 ctx.strokeStyle = isTarget ? "#fb7185" : "rgba(255,255,255,0.85)";
                 ctx.stroke();
+
+                // Country 3-letter Code below ball
+                ctx.font = "800 7.5px sans-serif";
+                ctx.textAlign = "center";
+                ctx.textBaseline = "top";
+                ctx.fillStyle = "rgba(255, 255, 255, 0.88)";
+                ctx.fillText(b.country.code, 0, b.r + 2);
 
                 ctx.restore();
             }
         }
 
-        // ==========================================
-        // 7. HUD, LIVE CHAT & USER INTERACTION
-        // ==========================================
-        const VIEWER_NAMES = ["Arjun_YT", "Kavya99", "TamilGamer", "MessiFan10", "CR7_King", "Priya_Live", "Rahul_IND", "LankaBoy", "Speed_Fan", "Nila_Star"];
+        /* ==========================================================================
+           SECTION 5: AUDIENCE INTERACTION & LIVE CHAT SIMULATION
+           ========================================================================== */
+        const MOCK_VIEWERS = ["Arjun_YT", "Kavya_Live", "MessiFan10", "CR7_King", "TamilGamer", "Priya_99", "LankaStar", "SpeedFan", "Nila_YT"];
 
-        function addChatMessage(user, text) {
-            const feed = document.getElementById('liveChatFeed');
-            const row = document.createElement('div');
-            row.className = 'chat-msg';
-            row.innerHTML = `<span style="color:#38bdf8;font-weight:800;">${user}:</span> <span style="color:#f1f5f9;">${text}</span>`;
-            feed.appendChild(row);
-            while (feed.children.length > 3) {
-                feed.removeChild(feed.firstChild);
-            }
+        function updateChatTicker(user, msg) {
+            const ticker = document.getElementById('chatTicker');
+            ticker.innerHTML = `<span style="color:#38bdf8;font-weight:800;margin-right:6px;">${user}:</span><span style="color:#f1f5f9;">${msg}</span>`;
         }
 
-        function updateHUD() {
-            document.getElementById('aliveCount').innerText = balls.length;
-            document.getElementById('totalCount').innerText = COUNTRIES_DB.length;
-            document.getElementById('elimCount').innerText = `${eliminatedCount} Out`;
-
-            const active = balls.map(b => b.country);
-            active.sort((a, b) => (supportStats[b.name] || 0) - (supportStats[a.name] || 0));
-            const top2 = active.slice(0, 2);
-
-            document.getElementById('supportList').innerHTML = top2.map((c, idx) => `
-                <div class="support-row">
-                    <span style="overflow:hidden;text-overflow:ellipsis;white-space:nowrap;max-width:105px;">
-                        <span style="color:#facc15;">#${idx + 1}</span> ${c.flag} ${c.name}
-                    </span>
-                    <span style="color:#22d3ee;">👍 ${supportStats[c.name] || 10}</span>
-                </div>
-            `).join('');
-        }
-
-        function supportCountry(queryName, action = 'boost', sender = 'You') {
-            getAudioContext();
-            const q = queryName.trim().toLowerCase();
+        function supportNation(query, type = 'boost', user = 'You') {
+            initAudioPipeline();
+            const q = query.trim().toLowerCase();
             if (!q) return;
 
-            const ball = balls.find(b => b.country.name.toLowerCase().includes(q));
-            if (ball) {
-                supportStats[ball.country.name] = (supportStats[ball.country.name] || 0) + 1;
-                if (action === 'shield') {
-                    ball.shieldTime = 4.0;
-                    sfxShield();
-                    spawnShockwave(ball.x, ball.y, '#22d3ee');
-                    addChatMessage(sender, `🛡️ Shielded ${ball.country.flag} ${ball.country.name}!`);
+            const found = balls.find(b => b.country.name.toLowerCase().includes(q) || b.country.code.toLowerCase() === q);
+            if (found) {
+                if (type === 'shield') {
+                    found.shield = 4.5;
+                    playShieldSfx();
+                    shockwaves.push({ x: found.x, y: found.y, r: 8, spd: 5, color: '#22d3ee', alpha: 1 });
+                    updateChatTicker(user, `🛡️ Activated Shield for ${found.country.flag} ${found.country.name}!`);
                 } else {
-                    const ang = Math.atan2(ball.y - CENTER_Y, ball.x - CENTER_X);
-                    ball.vx = Math.cos(ang) * 2.8;
-                    ball.vy = Math.sin(ang) * 2.8;
-                    sfxBoost();
-                    spawnParticles(ball.x, ball.y, '#34d399', 10);
-                    addChatMessage(sender, `⚡ Boosted ${ball.country.flag} ${ball.country.name}!`);
+                    const ang = Math.atan2(found.y - CY, found.x - CX);
+                    found.vx = Math.cos(ang) * 2.6;
+                    found.vy = Math.sin(ang) * 2.6;
+                    playBoostSfx();
+                    updateChatTicker(user, `⚡ Boosted ${found.country.flag} ${found.country.name} away from center!`);
                 }
-                updateHUD();
             } else {
-                addChatMessage(sender, queryName);
+                updateChatTicker(user, query);
             }
         }
 
-        // Tap Flag Directly on Canvas
+        // Direct tap on canvas flag gives it a Shield
         canvas.addEventListener('pointerdown', (e) => {
-            getAudioContext();
+            initAudioPipeline();
             const rect = canvas.getBoundingClientRect();
-            const scale = CANVAS_SIZE / rect.width;
-            const cx = (e.clientX - rect.left) * scale;
-            const cy = (e.clientY - rect.top) * scale;
+            const scale = SIZE / rect.width;
+            const px = (e.clientX - rect.left) * scale;
+            const py = (e.clientY - rect.top) * scale;
 
             for (let i = 0; i < balls.length; i++) {
                 const b = balls[i];
-                if (Math.hypot(b.x - cx, b.y - cy) <= b.radius + 10) {
-                    supportCountry(b.country.name, 'shield', 'Tap');
+                if (Math.hypot(b.x - px, b.y - py) <= b.r + 10) {
+                    supportNation(b.country.name, 'shield', 'Tap');
                     break;
                 }
             }
         });
 
-        document.getElementById('btnShieldCmd').addEventListener('click', () => {
-            const inp = document.getElementById('chatCmdInput');
-            if (inp.value) { supportCountry(inp.value, 'shield', 'You'); inp.value = ''; }
+        document.getElementById('sendShieldBtn').addEventListener('click', () => {
+            const inp = document.getElementById('countryInput');
+            if (inp.value) { supportNation(inp.value, 'shield', 'You'); inp.value = ''; }
         });
 
-        document.getElementById('btnBoostCmd').addEventListener('click', () => {
-            const inp = document.getElementById('chatCmdInput');
-            if (inp.value) { supportCountry(inp.value, 'boost', 'You'); inp.value = ''; }
+        document.getElementById('sendBoostBtn').addEventListener('click', () => {
+            const inp = document.getElementById('countryInput');
+            if (inp.value) { supportNation(inp.value, 'boost', 'You'); inp.value = ''; }
         });
 
-        document.getElementById('chatCmdInput').addEventListener('keydown', (e) => {
+        document.getElementById('countryInput').addEventListener('keydown', (e) => {
             if (e.key === 'Enter' && e.target.value.trim()) {
-                supportCountry(e.target.value, 'boost', 'You');
+                supportNation(e.target.value, 'boost', 'You');
                 e.target.value = '';
             }
         });
 
-        document.getElementById('btnNudgeAll').addEventListener('click', () => {
-            getAudioContext();
-            sfxBoost();
+        document.getElementById('quickShieldBtn').addEventListener('click', () => {
+            if (balls.length === 0) return;
+            const rand = balls[Math.floor(Math.random() * balls.length)];
+            supportNation(rand.country.name, 'shield', 'You');
+        });
+
+        document.getElementById('quickBoostBtn').addEventListener('click', () => {
+            if (balls.length === 0) return;
+            const rand = balls[Math.floor(Math.random() * balls.length)];
+            supportNation(rand.country.name, 'boost', 'You');
+        });
+
+        document.getElementById('stirBtn').addEventListener('click', () => {
+            initAudioPipeline();
+            playBoostSfx();
             balls.forEach(b => {
-                b.vx += (Math.random() - 0.5) * 1.6;
-                b.vy += (Math.random() - 0.5) * 1.6;
+                b.vx += (Math.random() - 0.5) * 1.5;
+                b.vy += (Math.random() - 0.5) * 1.5;
             });
         });
 
-        document.getElementById('btnPauseGame').addEventListener('click', (e) => {
+        document.getElementById('pauseBtn').addEventListener('click', (e) => {
             isPaused = !isPaused;
-            e.target.innerText = isPaused ? '▶️ Play' : '⏸️ Pause';
+            e.target.innerText = isPaused ? '▶️ Resume' : '⏸️ Pause';
         });
 
-        document.getElementById('btnResetGame').addEventListener('click', () => {
-            roundNumber = 1;
-            document.getElementById('roundCounter').innerText = roundNumber;
-            initBalls();
+        document.getElementById('resetBtn').addEventListener('click', () => {
+            setupArena();
         });
 
-        document.getElementById('soundBadge').addEventListener('click', (e) => {
-            getAudioContext();
-            soundMuted = !soundMuted;
-            e.target.innerText = soundMuted ? '🔇 SFX: OFF' : '🔊 SFX: ON';
+        document.getElementById('autoChatBtn').addEventListener('click', (e) => {
+            autoChatOn = !autoChatOn;
+            e.target.innerText = autoChatOn ? '🤖 Auto Chat: ON' : '🤖 Auto Chat: OFF';
         });
 
-        let autoChatTimer = setInterval(() => {
-            if (autoChatActive && !isPaused && !championLoopActive && balls.length > 1) {
+        setInterval(() => {
+            if (autoChatOn && !isPaused && !champActive && balls.length > 1) {
                 const randBall = balls[Math.floor(Math.random() * balls.length)];
-                const randUser = VIEWER_NAMES[Math.floor(Math.random() * VIEWER_NAMES.length)];
+                const viewer = MOCK_VIEWERS[Math.floor(Math.random() * MOCK_VIEWERS.length)];
                 const act = Math.random() < 0.35 ? 'shield' : 'boost';
-                supportCountry(randBall.country.name, act, randUser);
+                supportNation(randBall.country.name, act, viewer);
             }
-        }, 2200);
+        }, 2400);
 
-        document.getElementById('btnToggleAutoChat').addEventListener('click', (e) => {
-            autoChatActive = !autoChatActive;
-            e.target.innerText = autoChatActive ? '🤖 Chat: ON' : '🤖 Chat: OFF';
-        });
+        /* ==========================================================================
+           SECTION 6: MAIN ANIMATION LOOP
+           ========================================================================== */
+        function mainLoop(now) {
+            const dt = Math.min((now - prevTime) / 1000, 0.1);
+            prevTime = now;
 
-        // ==========================================
-        // 8. MAIN ANIMATION LOOP
-        // ==========================================
-        function gameLoop(now) {
-            const dt = Math.min((now - lastTimestamp) / 1000, 0.1);
-            lastTimestamp = now;
+            stepPhysics(dt);
+            drawArena();
 
-            updatePhysics(dt);
-            render();
-
-            document.getElementById('countdownHUD').innerText = `${countdownTimer.toFixed(2)}s`;
-            requestAnimationFrame(gameLoop);
+            document.getElementById('timerBadge').innerText = `${roundTimer.toFixed(2)}s`;
+            requestAnimationFrame(mainLoop);
         }
 
         window.addEventListener('load', () => {
-            initBalls();
-            requestAnimationFrame(gameLoop);
+            setupArena();
+            requestAnimationFrame(mainLoop);
         });
     </script>
 </body>
