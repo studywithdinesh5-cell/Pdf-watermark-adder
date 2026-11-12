@@ -1,186 +1,1655 @@
-
-
-
 <!DOCTYPE html>
-<html lang="ta">
+<html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>PDF இமேஜ் வாட்டர்மார்க் செயலி</title>
-    <script src="https://unpkg.com/pdf-lib@1.17.1/dist/pdf-lib.min.js"></script>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <title>Flag War Battle Simulator</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,700;0,900;1,900&family=Teko:wght@700&display=swap" rel="stylesheet">
     <style>
         body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background-color: #e9f0f3;
-            margin: 0;
-            padding: 20px;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            min-height: 100vh;
+            font-family: 'Montserrat', sans-serif;
+            background-color: #030712;
+            overflow-x: hidden;
+            touch-action: manipulation;
+            user-select: none;
         }
-        .container {
-            background-color: white;
-            padding: 30px;
-            border-radius: 15px;
-            box-shadow: 0 6px 20px rgba(0,0,0,0.1);
-            max-width: 500px;
-            width: 100%;
-            text-align: center;
+        .font-teko { font-family: 'Teko', sans-serif; }
+        
+        .neon-blue {
+            text-shadow: 0 0 10px #00e5ff, 0 0 20px #0077ff, 0 0 35px #0044ff;
         }
-        h2 {
-            color: #2c3e50;
-            margin-bottom: 25px;
-            font-size: 24px;
+        .neon-red {
+            text-shadow: 0 0 10px #ff3344, 0 0 20px #ff0055, 0 0 35px #990022;
         }
-        .form-group {
-            margin-bottom: 20px;
-            text-align: left;
+        .neon-gold {
+            text-shadow: 0 0 8px #ffea00, 0 0 18px #ff9900;
         }
-        label {
-            display: block;
-            margin-bottom: 10px;
-            font-weight: bold;
-            color: #4a4a4a;
+
+        @keyframes screenShake {
+            0% { transform: translate(0, 0) rotate(0deg); }
+            20% { transform: translate(-6px, 6px) rotate(-1.5deg); }
+            40% { transform: translate(6px, -5px) rotate(1.5deg); }
+            60% { transform: translate(-5px, -3px) rotate(-0.5deg); }
+            80% { transform: translate(4px, 4px) rotate(0.8deg); }
+            100% { transform: translate(0, 0) rotate(0deg); }
         }
-        input[type="file"] {
-            width: 100%;
-            padding: 12px;
-            border: 2px solid #ddd;
-            border-radius: 8px;
-            box-sizing: border-box;
-            background-color: #fcfcfc;
-            cursor: pointer;
+        .shake-active {
+            animation: screenShake 0.4s ease-in-out;
         }
-        button {
-            background-color: #e67e22;
-            color: white;
-            padding: 15px 25px;
-            border: none;
-            border-radius: 8px;
-            cursor: pointer;
-            font-size: 18px;
-            width: 100%;
-            font-weight: bold;
-            transition: background 0.3s;
-            margin-top: 10px;
+
+        .lightning-blue {
+            background: linear-gradient(180deg, rgba(0, 195, 255, 0.45) 0%, rgba(0, 102, 255, 0.2) 50%, rgba(0, 238, 255, 0.5) 100%);
+            box-shadow: inset 0 0 30px rgba(0, 217, 255, 0.6), 0 0 25px rgba(0, 136, 255, 0.4);
         }
-        button:hover {
-            background-color: #d35400;
+        .lightning-red {
+            background: linear-gradient(180deg, rgba(255, 38, 0, 0.45) 0%, rgba(255, 0, 119, 0.2) 50%, rgba(255, 98, 0, 0.5) 100%);
+            box-shadow: inset 0 0 30px rgba(255, 38, 0, 0.6), 0 0 25px rgba(255, 0, 98, 0.4);
         }
-        button:disabled {
-            background-color: #bdc3c7;
-            cursor: not-allowed;
+
+        @keyframes pulseGlow {
+            0%, 100% { opacity: 0.9; transform: scale(1); }
+            50% { opacity: 1; transform: scale(1.02); }
         }
-        #status {
-            margin-top: 20px;
-            font-weight: bold;
-            color: #34495e;
-            padding: 10px;
-            border-radius: 5px;
+        .banner-glow {
+            animation: pulseGlow 0.8s infinite ease-in-out;
         }
-        .success { color: #27ae60; background-color: #e8f8f5; }
-        .error { color: #c0392b; background-color: #fadbd8; }
     </style>
 </head>
-<body>
+<body class="min-h-screen w-full flex flex-col items-center justify-start bg-slate-950 text-white p-2 sm:p-4">
 
-<div class="container">
-    <h2>PDF இமேஜ் வாட்டர்மார்க் 🖼️</h2>
-    
-    <div class="form-group">
-        <label for="pdfFile">1. PDF ஃபைலைத் தேர்ந்தெடுக்கவும்:</label>
-        <input type="file" id="pdfFile" accept=".pdf">
+    <!-- AUDIO UNLOCK BANNER -->
+    <div id="audioUnlockBanner" class="w-full max-w-[430px] mb-2 bg-gradient-to-r from-amber-500 via-rose-500 to-amber-500 text-black font-black text-xs sm:text-sm py-2 px-3 rounded-2xl flex items-center justify-between shadow-[0_0_25px_rgba(245,158,11,0.7)] cursor-pointer active:scale-95 transition transform animate-bounce">
+        <span class="flex items-center gap-1.5">
+            <span class="text-base sm:text-lg">🔊</span>
+            <span>CLICK / TAP TO ACTIVATE SOUND FX!</span>
+        </span>
+        <span class="bg-black text-yellow-300 px-2 py-0.5 rounded-lg text-[10px] uppercase font-extrabold tracking-wider">
+            UNMUTE
+        </span>
     </div>
 
-    <div class="form-group">
-        <label for="imageFile">2. வாட்டர்மார்க் இமேஜைத் தேர்ந்தெடுக்கவும் (PNG/JPG):</label>
-        <input type="file" id="imageFile" accept=".png, .jpg, .jpeg">
+    <!-- MAIN STREAM CONTAINER (9:16 Aspect Layout) -->
+    <div id="streamFrame" class="relative w-full max-w-[430px] rounded-3xl overflow-hidden border-2 border-slate-800 shadow-[0_0_50px_rgba(0,0,0,0.95)] flex flex-col bg-gradient-to-b from-gray-950 via-slate-900 to-black transition-all">
+
+        <!-- Split Lightning Background (Messi Left / Ronaldo Right) -->
+        <div class="absolute inset-0 pointer-events-none z-0 flex">
+            <!-- Left Blue Side -->
+            <div class="w-1/2 h-full lightning-blue opacity-30 relative overflow-hidden">
+                <div class="absolute inset-0 bg-[radial-gradient(ellipse_at_top_left,_var(--tw-gradient-stops))] from-cyan-500/30 via-blue-900/10 to-transparent"></div>
+            </div>
+            <!-- Right Red Side -->
+            <div class="w-1/2 h-full lightning-red opacity-30 relative overflow-hidden">
+                <div class="absolute inset-0 bg-[radial-gradient(ellipse_at_top_right,_var(--tw-gradient-stops))] from-rose-500/30 via-red-900/10 to-transparent"></div>
+            </div>
+        </div>
+
+        <!-- TOP BAR: LIVE STATUS -->
+        <header class="relative z-10 px-3 pt-3 flex items-center justify-between">
+            <div class="flex items-center gap-1.5 bg-red-600 text-white text-[10px] font-black px-2.5 py-0.5 rounded-full tracking-wider shadow-[0_0_12px_#ef4444]">
+                <span class="w-2 h-2 rounded-full bg-white animate-ping"></span>
+                <span>LIVE</span>
+                <span class="text-white/80 font-normal ml-0.5">58.4K</span>
+            </div>
+            <div class="flex items-center gap-2">
+                <button id="openMusicModalBtn" class="text-[11px] font-bold bg-purple-900/90 border border-purple-500/60 px-2.5 py-0.5 rounded-full hover:bg-purple-800 transition flex items-center gap-1 shadow">
+                    🎵 Music Setup
+                </button>
+                <button id="soundBadge" class="text-[11px] font-bold bg-slate-800/90 border border-slate-600 px-2.5 py-0.5 rounded-full hover:bg-slate-700 transition flex items-center gap-1 shadow">
+                    🔊 SFX: ON
+                </button>
+                <span class="text-[11px] bg-slate-900 border border-cyan-500/40 text-cyan-300 font-bold px-2 py-0.5 rounded-full">
+                    ROUND <span id="roundCounter">1</span>
+                </span>
+            </div>
+        </header>
+
+        <!-- CURRENT MUSIC BAR INDICATOR -->
+        <div class="relative z-10 mx-3 mt-1.5 flex items-center justify-between bg-purple-950/40 border border-purple-500/30 rounded-lg px-2.5 py-1 text-[10px]">
+            <div class="flex items-center gap-1.5 truncate max-w-[240px]">
+                <span class="text-purple-400">🎶</span>
+                <span class="text-slate-400 font-semibold">Track:</span>
+                <span id="currentTrackLabel" class="text-yellow-300 font-bold truncate">Default Synthwave Beat</span>
+            </div>
+            <button id="quickBgmToggleBtn" class="font-bold text-purple-300 hover:text-white transition">
+                ▶️ Play
+            </button>
+        </div>
+
+        <!-- TITLE HEADER -->
+        <div class="relative z-10 text-center mt-1 px-2">
+            <h1 class="text-3xl sm:text-4xl font-black font-teko tracking-wide uppercase leading-none">
+                <span class="text-cyan-400 neon-blue">WHERE ARE </span>
+                <span class="text-emerald-400">YOU </span>
+                <span class="text-rose-500 neon-red">FROM?</span>
+            </h1>
+        </div>
+
+        <!-- TWO HUD CARDS -->
+        <div class="relative z-10 grid grid-cols-2 gap-2 px-3 mt-1.5 text-[10px]">
+            <!-- Card 1: Chat Support -->
+            <div class="bg-black/70 backdrop-blur-md border border-cyan-500/40 rounded-xl p-2 shadow-lg flex flex-col justify-between">
+                <div class="flex items-center justify-between border-b border-cyan-500/20 pb-1 mb-1">
+                    <span class="font-extrabold text-cyan-300 tracking-wider flex items-center gap-1">
+                        <span class="w-1.5 h-1.5 rounded-full bg-cyan-400"></span> CHAT SUPPORT
+                    </span>
+                    <span class="text-rose-500 font-black animate-pulse">● LIVE</span>
+                </div>
+                <div id="supportList" class="flex flex-col gap-1"></div>
+            </div>
+
+            <!-- Card 2: Save Your Country Rules -->
+            <div class="bg-black/70 backdrop-blur-md border border-rose-500/40 rounded-xl p-2 shadow-lg flex flex-col justify-between">
+                <div class="flex items-center justify-between border-b border-rose-500/20 pb-1 mb-1">
+                    <span class="font-extrabold text-rose-300 tracking-wider">SAVE YOUR COUNTRY</span>
+                    <span class="text-yellow-400">🛡️</span>
+                </div>
+                <div class="space-y-1 font-semibold text-slate-200">
+                    <div class="flex items-center justify-between">
+                        <span class="text-slate-400">Type Name</span>
+                        <span class="text-cyan-400 font-bold">🛡️ SHIELD</span>
+                    </div>
+                    <div class="flex items-center justify-between">
+                        <span class="text-slate-400">Tap Ball</span>
+                        <span class="text-emerald-400 font-bold">🚀 PUSH OUT</span>
+                    </div>
+                    <div class="flex items-center justify-between">
+                        <span class="text-slate-400">Center Core</span>
+                        <span class="text-rose-400 font-bold">💥 OUT (5.0s)</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 5-SECOND COUNTDOWN DISPLAY HUD -->
+        <div class="relative z-10 mx-3 mt-2 bg-gradient-to-r from-red-950/90 via-black/95 to-red-950/90 border-2 border-red-500/70 rounded-xl p-2 flex items-center justify-between shadow-[0_0_20px_rgba(255,0,0,0.4)]">
+            <div class="flex items-center gap-2">
+                <span class="text-xl animate-pulse">⚠️</span>
+                <div class="flex flex-col leading-tight">
+                    <span class="text-[9px] font-bold tracking-widest text-red-300 uppercase">Center Vortex Elimination</span>
+                    <span id="dangerTargetText" class="text-xs font-black text-yellow-300 truncate max-w-[160px]">Target: Scanning...</span>
+                </div>
+            </div>
+            <div class="flex flex-col items-end">
+                <span class="text-[8px] font-bold text-gray-400 uppercase tracking-widest">NEXT OUT IN</span>
+                <span id="countdownHUD" class="text-2xl sm:text-3xl font-black font-teko tracking-wider text-yellow-400 neon-gold leading-none">
+                    5.00s
+                </span>
+            </div>
+        </div>
+
+        <!-- ARENA CANVAS CONTAINER -->
+        <div class="relative z-10 w-full flex items-center justify-center p-1 mt-1">
+            <div class="relative w-[380px] h-[380px] flex items-center justify-center">
+                <!-- Physics Canvas -->
+                <canvas id="arenaCanvas" width="380" height="380" class="rounded-full shadow-2xl block"></canvas>
+
+                <!-- 3-SECOND FULL ELIMINATION BANNER OVERLAY -->
+                <div id="elimBannerContainer" class="pointer-events-none absolute inset-x-2 top-1/2 -translate-y-1/2 z-40 hidden flex-col items-center justify-center transition-all">
+                    <div class="banner-glow w-full bg-black/95 border-2 border-red-500 rounded-2xl p-3 sm:p-4 text-center shadow-[0_0_40px_rgba(255,0,0,0.9)] flex flex-col items-center">
+                        <div class="flex items-center gap-2 mb-1">
+                            <span class="text-xl animate-bounce">💥</span>
+                            <span class="text-xs sm:text-sm font-black tracking-widest text-red-400 uppercase">ELIMINATION CONFIRMED</span>
+                            <span class="text-xl animate-bounce">💥</span>
+                        </div>
+                        
+                        <div class="flex items-center justify-center gap-3 my-1">
+                            <span id="elimCountryFlag" class="text-4xl sm:text-5xl drop-shadow-[0_0_15px_#ffffff]">🏳️</span>
+                            <div class="flex flex-col text-left">
+                                <span id="elimCountryName" class="text-2xl sm:text-3xl font-black font-teko tracking-wider text-yellow-300 neon-gold uppercase leading-none">
+                                    COUNTRY
+                                </span>
+                                <span class="text-[10px] font-extrabold text-red-300 uppercase tracking-wider">
+                                    TOUCHED THE CENTER VORTEX!
+                                </span>
+                            </div>
+                        </div>
+
+                        <!-- 1-Second Visual Progress Bar -->
+                        <div class="w-full bg-slate-800 rounded-full h-2 mt-2 overflow-hidden border border-red-500/50">
+                            <div id="elimProgressBar" class="bg-gradient-to-r from-red-600 via-yellow-400 to-amber-500 h-full w-full transition-all duration-100 ease-linear"></div>
+                        </div>
+                        <div class="flex justify-between w-full text-[9px] text-slate-300 font-bold mt-1">
+                            <span>Resuming in...</span>
+                            <span id="elimTimerText" class="text-yellow-400 font-black">1.0s</span>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+
+        <!-- BOTTOM STATUS PANEL -->
+        <div class="relative z-10 px-4 py-1 text-center">
+            <h2 class="text-xl sm:text-2xl font-black font-teko tracking-wider text-slate-100 uppercase leading-none drop-shadow">
+                SURVIVORS STANDING
+            </h2>
+            <div class="inline-block mt-0.5 bg-slate-900/90 border border-purple-500/50 px-4 py-0.5 rounded-full shadow-[0_0_15px_rgba(168,85,247,0.35)]">
+                <span class="text-xs font-black tracking-widest text-purple-300">
+                    <span id="aliveCount" class="text-emerald-400 text-sm">48</span> / <span id="totalCount" class="text-white text-sm">48</span> ALIVE
+                    (<span id="elimCount" class="text-rose-400 text-xs">0 Eliminated</span>)
+                </span>
+            </div>
+        </div>
+
+        <!-- CONTROLS & CHAT PANEL -->
+        <div class="relative z-10 p-3 pt-2 bg-black/85 backdrop-blur-md border-t border-slate-800 flex flex-col gap-2 mt-auto">
+            <div class="flex items-center gap-1.5">
+                <input id="chatCmdInput" type="text" placeholder="Type country name..." class="flex-1 bg-slate-900/90 border border-slate-700 focus:border-cyan-400 rounded-xl px-3 py-1.5 text-xs text-white placeholder-slate-500 focus:outline-none transition">
+                <button id="btnShieldCmd" class="bg-cyan-600 hover:bg-cyan-500 text-white font-black text-[11px] px-3 py-1.5 rounded-xl transition shadow active:scale-95">
+                    🛡️ Shield
+                </button>
+                <button id="btnBoostCmd" class="bg-emerald-600 hover:bg-emerald-500 text-white font-black text-[11px] px-3 py-1.5 rounded-xl transition shadow active:scale-95">
+                    ⚡ Push Out
+                </button>
+            </div>
+
+            <div class="flex items-center justify-between gap-1 overflow-x-auto text-[10px] pb-1">
+                <button id="btnToggleAutoChat" class="bg-purple-900/70 hover:bg-purple-800 border border-purple-500/50 text-purple-200 font-bold px-2.5 py-1 rounded-lg transition whitespace-nowrap">
+                    🤖 Auto Chat: ON
+                </button>
+                <button id="btnNudgeAll" class="bg-amber-900/70 hover:bg-amber-800 border border-amber-500/50 text-amber-200 font-bold px-2.5 py-1 rounded-lg transition whitespace-nowrap">
+                    🌪️ Slow Drift
+                </button>
+                <button id="btnPauseGame" class="bg-slate-800 hover:bg-slate-700 border border-slate-600 text-white font-bold px-2.5 py-1 rounded-lg transition whitespace-nowrap">
+                    ⏸️ Pause
+                </button>
+                <button id="btnResetGame" class="bg-rose-900/70 hover:bg-rose-800 border border-rose-500/50 text-rose-200 font-bold px-2.5 py-1 rounded-lg transition whitespace-nowrap">
+                    🔄 Reset
+                </button>
+            </div>
+        </div>
+
+        <!-- WINNER MODAL -->
+        <div id="winnerModal" class="absolute inset-0 z-50 bg-black/95 backdrop-blur-md hidden flex-col items-center justify-center p-6 text-center">
+            <div class="text-4xl animate-bounce">🏆</div>
+            <span class="text-sm font-black text-yellow-400 tracking-widest uppercase mt-2">LAST SURVIVOR NATION</span>
+            <div id="winnerFlagBadge" class="text-6xl my-2 drop-shadow-[0_0_25px_#ffea00]">👑</div>
+            <h2 id="winnerCountryName" class="text-3xl font-black font-teko text-white uppercase neon-gold">NATION</h2>
+            <p class="text-xs text-slate-300 max-w-xs mt-1">Survived every center danger vortex elimination!</p>
+            <button id="btnRestartRound" class="mt-5 bg-gradient-to-r from-yellow-500 to-amber-600 hover:from-yellow-400 hover:to-amber-500 text-black font-black text-sm px-6 py-2.5 rounded-full shadow-[0_0_20px_#eab308] transition transform active:scale-95">
+                🔥 PLAY NEXT BATTLE
+            </button>
+        </div>
+
+        <!-- CUSTOM MUSIC / AUDIO CONTROLS MODAL -->
+        <div id="musicModal" class="absolute inset-0 z-50 bg-black/90 backdrop-blur-md hidden flex-col items-center justify-center p-4">
+            <div class="w-full max-w-[340px] bg-slate-900 border-2 border-purple-500 rounded-2xl p-4 shadow-[0_0_30px_rgba(168,85,247,0.5)] flex flex-col gap-3">
+                <div class="flex items-center justify-between border-b border-purple-500/30 pb-2">
+                    <span class="font-black text-sm text-purple-300 flex items-center gap-1.5">
+                        <span>🎵</span> MUSIC CONTROLS
+                    </span>
+                    <button id="closeMusicModalBtn" class="text-slate-400 hover:text-white text-lg font-bold">✕</button>
+                </div>
+
+                <!-- Custom File Upload Input -->
+                <div class="flex flex-col gap-1.5">
+                    <label class="text-[11px] font-bold text-slate-300">📁 Upload Custom Music (.m4a, .mp3, .wav, .aac):</label>
+                    <input type="file" id="customAudioInput" accept=".m4a,.mp3,.wav,.aac,.ogg,.flac,audio/mp4,audio/x-m4a,audio/mpeg,audio/wav,audio/*" class="text-[11px] file:mr-2 file:py-1 file:px-2.5 file:rounded-lg file:border-0 file:text-[10px] file:font-black file:bg-purple-600 file:text-white hover:file:bg-purple-500 text-slate-400 cursor-pointer">
+                </div>
+
+                <!-- Music Source Selector -->
+                <div class="flex items-center gap-2 mt-1">
+                    <button id="btnSelectDefaultBgm" class="flex-1 bg-purple-900 border border-purple-400 text-white font-bold text-[10px] py-1.5 rounded-lg hover:bg-purple-800 transition">
+                        Default Synth Beat
+                    </button>
+                    <button id="btnSelectCustomBgm" class="flex-1 bg-slate-800 border border-slate-600 text-slate-400 font-bold text-[10px] py-1.5 rounded-lg hover:bg-slate-700 transition" disabled>
+                        Custom Track
+                    </button>
+                </div>
+
+                <!-- Volume Slider -->
+                <div class="flex flex-col gap-1 mt-1">
+                    <div class="flex justify-between text-[11px] font-bold text-slate-300">
+                        <span>Volume:</span>
+                        <span id="volumeValueLabel" class="text-cyan-400">70%</span>
+                    </div>
+                    <input type="range" id="bgmVolumeSlider" min="0" max="100" value="70" class="w-full accent-purple-500 cursor-pointer">
+                </div>
+
+                <!-- Controls & Status -->
+                <div class="flex items-center justify-between pt-1">
+                    <button id="btnModalPlayPause" class="bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-500 hover:to-indigo-500 text-white font-black text-xs px-4 py-2 rounded-xl transition shadow active:scale-95 flex items-center gap-1.5">
+                        <span id="modalPlayIcon">▶️</span>
+                        <span id="modalPlayText">Play Music</span>
+                    </button>
+                    <label class="flex items-center gap-1.5 text-[11px] font-bold text-slate-300 cursor-pointer">
+                        <input type="checkbox" id="loopAudioCheckbox" checked class="accent-purple-500">
+                        <span>Loop Track</span>
+                    </label>
+                </div>
+            </div>
+        </div>
+
+        <!-- Hidden Audio Element for Custom Uploads -->
+        <audio id="customAudioElement" preload="auto"></audio>
+
     </div>
 
-    <button onclick="addImageWatermark()" id="processBtn">வாட்டர்மார்க் சேர்த்து டவுன்லோட் செய்</button>
+    <script>
+        // --- 1. WEB AUDIO SYNTHESIZER & PROCEDURAL BGM ---
+        let audioCtx = null;
+        let soundMuted = false;
+        let bgmMuted = true;
+        let bgmIsPlaying = false;
+        let bgmStep = 0;
+        let bgmTimer = null;
+        let bgmGainNode = null;
 
-    <div id="status"></div>
-</div>
+        // Custom music player state
+        let musicMode = 'default'; // 'default' or 'custom'
+        const customAudioEl = document.getElementById('customAudioElement');
+        let customAudioReady = false;
+        let bgmVolume = 0.7;
 
-<script>
-    async function addImageWatermark() {
-        const pdfInput = document.getElementById('pdfFile');
-        const imageInput = document.getElementById('imageFile');
-        const statusDiv = document.getElementById('status');
-        const btn = document.getElementById('processBtn');
-
-        if (pdfInput.files.length === 0) {
-            statusDiv.innerHTML = "தயவுசெய்து ஒரு PDF ஃபைலைத் தேர்ந்தெடுக்கவும்!";
-            statusDiv.className = 'error';
-            return;
+        function getAudioContext() {
+            if (!audioCtx) {
+                const AudioContextClass = window.AudioContext || window.webkitAudioContext;
+                if (AudioContextClass) {
+                    audioCtx = new AudioContextClass();
+                    bgmGainNode = audioCtx.createGain();
+                    bgmGainNode.gain.value = 0.12 * bgmVolume;
+                    bgmGainNode.connect(audioCtx.destination);
+                }
+            }
+            if (audioCtx && audioCtx.state === 'suspended') {
+                audioCtx.resume();
+            }
+            return audioCtx;
         }
-        if (imageInput.files.length === 0) {
-            statusDiv.innerHTML = "வாட்டர்மார்க் இமேஜைத் தேர்ந்தெடுக்கவும்!";
-            statusDiv.className = 'error';
-            return;
+
+        function unlockAudioGlobal() {
+            const ctx = getAudioContext();
+            if (ctx) {
+                const osc = ctx.createOscillator();
+                const gain = ctx.createGain();
+                gain.gain.value = 0.01;
+                osc.connect(gain);
+                gain.connect(ctx.destination);
+                osc.start();
+                osc.stop(ctx.currentTime + 0.05);
+                
+                const banner = document.getElementById('audioUnlockBanner');
+                if (banner) banner.style.display = 'none';
+
+                if (bgmMuted) {
+                    playMusic();
+                }
+            }
         }
 
-        statusDiv.innerText = "Processing... தயவுசெய்து காத்திருக்கவும்...";
-        statusDiv.className = '';
-        btn.disabled = true;
+        window.addEventListener('click', unlockAudioGlobal, { once: true });
+        window.addEventListener('touchstart', unlockAudioGlobal, { once: true });
+        document.getElementById('audioUnlockBanner').addEventListener('click', unlockAudioGlobal);
 
-        try {
-            const pdfFile = pdfInput.files[0];
-            const imageFile = imageInput.files[0];
+        // CONTINUOUS ELECTRONIC BATTLE BACKGROUND MUSIC (BGM)
+        const BGM_TEMPO = 126;
+        const BGM_STEP_TIME = (60 / BGM_TEMPO) / 4; // 16th notes
+        const BASS_LINE = [110, 110, 130.8, 110, 146.8, 110, 130.8, 123.5, 98, 98, 123.5, 98, 130.8, 98, 110, 82.4];
+        const LEAD_ARP = [440, 523.25, 659.25, 880, 523.25, 659.25, 783.99, 659.25, 392, 493.88, 587.33, 783.99, 493.88, 587.33, 659.25, 523.25];
 
-            const pdfArrayBuffer = await pdfFile.arrayBuffer();
-            const imageArrayBuffer = await imageFile.arrayBuffer();
+        function playBgmBeat() {
+            if (!audioCtx || bgmMuted || !bgmIsPlaying || musicMode !== 'default') return;
+            const now = audioCtx.currentTime;
 
-            const pdfDoc = await PDFLib.PDFDocument.load(pdfArrayBuffer);
-            
-            let waterMarkImage;
-            if (imageFile.type === 'image/jpeg' || imageFile.type === 'image/jpg') {
-                waterMarkImage = await pdfDoc.embedJpg(imageArrayBuffer);
-            } else if (imageFile.type === 'image/png') {
-                waterMarkImage = await pdfDoc.embedPng(imageArrayBuffer);
-            } else {
-                throw new Error("தவறான இமேஜ் வகை (JPG/PNG மட்டும்)");
+            // 1. Kick on quarter notes
+            if (bgmStep % 4 === 0) {
+                const kickOsc = audioCtx.createOscillator();
+                const kickGain = audioCtx.createGain();
+                kickOsc.frequency.setValueAtTime(140, now);
+                kickOsc.frequency.exponentialRampToValueAtTime(32, now + 0.12);
+                kickGain.gain.setValueAtTime(0.28, now);
+                kickGain.gain.exponentialRampToValueAtTime(0.001, now + 0.13);
+                kickOsc.connect(kickGain);
+                kickGain.connect(bgmGainNode);
+                kickOsc.start(now);
+                kickOsc.stop(now + 0.13);
             }
 
-            const pages = pdfDoc.getPages();
+            // 2. Snare / Clack on beats 2 and 4
+            if (bgmStep % 8 === 4) {
+                const snareOsc = audioCtx.createOscillator();
+                const snareGain = audioCtx.createGain();
+                snareOsc.type = 'triangle';
+                snareOsc.frequency.setValueAtTime(240, now);
+                snareGain.gain.setValueAtTime(0.12, now);
+                snareGain.gain.exponentialRampToValueAtTime(0.001, now + 0.08);
+                snareOsc.connect(snareGain);
+                snareGain.connect(bgmGainNode);
+                snareOsc.start(now);
+                snareOsc.stop(now + 0.08);
+            }
+
+            // 3. Hi-Hat tick on off-beats
+            if (bgmStep % 2 === 1) {
+                const hatOsc = audioCtx.createOscillator();
+                const hatGain = audioCtx.createGain();
+                hatOsc.type = 'square';
+                hatOsc.frequency.setValueAtTime(6000 + (bgmStep % 4) * 500, now);
+                hatGain.gain.setValueAtTime(0.015, now);
+                hatGain.gain.exponentialRampToValueAtTime(0.0001, now + 0.025);
+                hatOsc.connect(hatGain);
+                hatGain.connect(bgmGainNode);
+                hatOsc.start(now);
+                hatOsc.stop(now + 0.025);
+            }
+
+            // 4. Synth Bassline
+            const bassFreq = BASS_LINE[bgmStep % BASS_LINE.length];
+            const bassOsc = audioCtx.createOscillator();
+            const bassGain = audioCtx.createGain();
+            bassOsc.type = 'sawtooth';
+            bassOsc.frequency.setValueAtTime(bassFreq, now);
+            bassGain.gain.setValueAtTime(0.1, now);
+            bassGain.gain.exponentialRampToValueAtTime(0.001, now + BGM_STEP_TIME * 0.9);
+            bassOsc.connect(bassGain);
+            bassGain.connect(bgmGainNode);
+            bassOsc.start(now);
+            bassOsc.stop(now + BGM_STEP_TIME * 0.9);
+
+            // 5. Synth Lead Arpeggio
+            if (bgmStep % 2 === 0) {
+                const leadFreq = LEAD_ARP[(bgmStep / 2) % LEAD_ARP.length];
+                const leadOsc = audioCtx.createOscillator();
+                const leadGain = audioCtx.createGain();
+                leadOsc.type = 'sine';
+                leadOsc.frequency.setValueAtTime(leadFreq, now);
+                leadGain.gain.setValueAtTime(0.05, now);
+                leadGain.gain.exponentialRampToValueAtTime(0.0001, now + BGM_STEP_TIME * 1.5);
+                leadOsc.connect(leadGain);
+                leadGain.connect(bgmGainNode);
+                leadOsc.start(now);
+                leadOsc.stop(now + BGM_STEP_TIME * 1.5);
+            }
+
+            bgmStep = (bgmStep + 1) % 64;
+        }
+
+        function playMusic() {
+            getAudioContext();
+            bgmMuted = false;
+            bgmIsPlaying = true;
+
+            if (musicMode === 'custom' && customAudioReady) {
+                if (bgmTimer) clearInterval(bgmTimer);
+                customAudioEl.volume = bgmVolume;
+                customAudioEl.play().catch(e => console.log('Autoplay blocked:', e));
+            } else {
+                customAudioEl.pause();
+                if (!bgmTimer) {
+                    bgmTimer = setInterval(playBgmBeat, BGM_STEP_TIME * 1000);
+                }
+            }
+            updateMusicUI();
+        }
+
+        function pauseMusic() {
+            bgmMuted = true;
+            bgmIsPlaying = false;
+            if (bgmTimer) {
+                clearInterval(bgmTimer);
+                bgmTimer = null;
+            }
+            customAudioEl.pause();
+            updateMusicUI();
+        }
+
+        function toggleMusic() {
+            if (bgmIsPlaying && !bgmMuted) {
+                pauseMusic();
+            } else {
+                playMusic();
+            }
+        }
+
+        function updateMusicUI() {
+            const isPlaying = bgmIsPlaying && !bgmMuted;
+            const quickBtn = document.getElementById('quickBgmToggleBtn');
+            const modalIcon = document.getElementById('modalPlayIcon');
+            const modalText = document.getElementById('modalPlayText');
+
+            if (isPlaying) {
+                quickBtn.innerText = '⏸️ Pause';
+                quickBtn.classList.add('text-rose-400');
+                modalIcon.innerText = '⏸️';
+                modalText.innerText = 'Pause Music';
+            } else {
+                quickBtn.innerText = '▶️ Play';
+                quickBtn.classList.remove('text-rose-400');
+                modalIcon.innerText = '▶️';
+                modalText.innerText = 'Play Music';
+            }
+        }
+
+        // Custom File Upload Handler
+        document.getElementById('customAudioInput').addEventListener('change', function(e) {
+            const file = e.target.files[0];
+            if (file) {
+                const fileName = file.name.toLowerCase();
+                const isSupportedAudio = file.type.startsWith('audio/') ||
+                                         file.type === 'video/mp4' ||
+                                         fileName.endsWith('.m4a') ||
+                                         fileName.endsWith('.mp3') ||
+                                         fileName.endsWith('.wav') ||
+                                         fileName.endsWith('.aac') ||
+                                         fileName.endsWith('.ogg') ||
+                                         fileName.endsWith('.flac');
+
+                if (isSupportedAudio) {
+                    const objectUrl = URL.createObjectURL(file);
+                    customAudioEl.src = objectUrl;
+                    customAudioEl.loop = document.getElementById('loopAudioCheckbox').checked;
+                    customAudioEl.volume = bgmVolume;
+                    customAudioEl.load();
+                    customAudioReady = true;
+
+                    musicMode = 'custom';
+                    document.getElementById('currentTrackLabel').innerText = file.name;
+
+                    const customBtn = document.getElementById('btnSelectCustomBgm');
+                    customBtn.disabled = false;
+                    customBtn.classList.remove('text-slate-400', 'bg-slate-800', 'border-slate-600');
+                    customBtn.classList.add('text-white', 'bg-purple-900', 'border-purple-400');
+
+                    const defaultBtn = document.getElementById('btnSelectDefaultBgm');
+                    defaultBtn.classList.remove('text-white', 'bg-purple-900', 'border-purple-400');
+                    defaultBtn.classList.add('text-slate-400', 'bg-slate-800', 'border-slate-600');
+
+                    playMusic();
+                }
+            }
+        });
+
+        // Switch back to Default Synth Beat
+        document.getElementById('btnSelectDefaultBgm').addEventListener('click', () => {
+            musicMode = 'default';
+            document.getElementById('currentTrackLabel').innerText = 'Default Synthwave Beat';
+
+            const defaultBtn = document.getElementById('btnSelectDefaultBgm');
+            defaultBtn.classList.add('text-white', 'bg-purple-900', 'border-purple-400');
+            defaultBtn.classList.remove('text-slate-400', 'bg-slate-800', 'border-slate-600');
+
+            const customBtn = document.getElementById('btnSelectCustomBgm');
+            customBtn.classList.remove('text-white', 'bg-purple-900', 'border-purple-400');
+            customBtn.classList.add('text-slate-400', 'bg-slate-800', 'border-slate-600');
+
+            if (bgmIsPlaying && !bgmMuted) playMusic();
+        });
+
+        // Switch to Custom Track
+        document.getElementById('btnSelectCustomBgm').addEventListener('click', () => {
+            if (customAudioReady) {
+                musicMode = 'custom';
+                const input = document.getElementById('customAudioInput');
+                if (input.files[0]) {
+                    document.getElementById('currentTrackLabel').innerText = input.files[0].name;
+                }
+
+                const customBtn = document.getElementById('btnSelectCustomBgm');
+                customBtn.classList.add('text-white', 'bg-purple-900', 'border-purple-400');
+                customBtn.classList.remove('text-slate-400', 'bg-slate-800', 'border-slate-600');
+
+                const defaultBtn = document.getElementById('btnSelectDefaultBgm');
+                defaultBtn.classList.remove('text-white', 'bg-purple-900', 'border-purple-400');
+                defaultBtn.classList.add('text-slate-400', 'bg-slate-800', 'border-slate-600');
+
+                if (bgmIsPlaying && !bgmMuted) playMusic();
+            }
+        });
+
+        // Volume Slider
+        document.getElementById('bgmVolumeSlider').addEventListener('input', (e) => {
+            bgmVolume = e.target.value / 100;
+            document.getElementById('volumeValueLabel').innerText = `${e.target.value}%`;
+
+            if (bgmGainNode) {
+                bgmGainNode.gain.value = 0.12 * bgmVolume;
+            }
+            customAudioEl.volume = bgmVolume;
+        });
+
+        // Loop checkbox
+        document.getElementById('loopAudioCheckbox').addEventListener('change', (e) => {
+            customAudioEl.loop = e.target.checked;
+        });
+
+        // Modal Controls
+        document.getElementById('openMusicModalBtn').addEventListener('click', () => {
+            const modal = document.getElementById('musicModal');
+            modal.classList.remove('hidden');
+            modal.classList.add('flex');
+        });
+        document.getElementById('closeMusicModalBtn').addEventListener('click', () => {
+            const modal = document.getElementById('musicModal');
+            modal.classList.add('hidden');
+            modal.classList.remove('flex');
+        });
+        document.getElementById('btnModalPlayPause').addEventListener('click', toggleMusic);
+        document.getElementById('quickBgmToggleBtn').addEventListener('click', toggleMusic);
+
+        function playTone(freq, type = 'sine', duration = 0.08, volume = 0.15) {
+            if (soundMuted) return;
+            try {
+                const ctx = getAudioContext();
+                if (!ctx) return;
+                const osc = ctx.createOscillator();
+                const gain = ctx.createGain();
+                osc.type = type;
+                osc.frequency.setValueAtTime(freq, ctx.currentTime);
+                gain.gain.setValueAtTime(volume, ctx.currentTime);
+                gain.gain.exponentialRampToValueAtTime(0.0001, ctx.currentTime + duration);
+                osc.connect(gain);
+                gain.connect(ctx.destination);
+                osc.start();
+                osc.stop(ctx.currentTime + duration);
+            } catch (e) { }
+        }
+
+        function sfxBounce() {
+            playTone(280 + Math.random() * 120, 'triangle', 0.03, 0.03);
+        }
+        function sfxTick() {
+            playTone(850, 'sine', 0.05, 0.12);
+        }
+        function sfxUrgentTick() {
+            playTone(1300, 'square', 0.08, 0.18);
+        }
+        function sfxShield() {
+            playTone(450, 'sine', 0.1, 0.18);
+            setTimeout(() => playTone(820, 'sine', 0.16, 0.18), 50);
+        }
+        function sfxBoost() {
+            playTone(260, 'sawtooth', 0.08, 0.15);
+            setTimeout(() => playTone(640, 'sine', 0.12, 0.15), 40);
+        }
+        function sfxExplosion() {
+            if (soundMuted) return;
+            try {
+                const ctx = getAudioContext();
+                if (!ctx) return;
+                const osc = ctx.createOscillator();
+                const gain = ctx.createGain();
+                osc.type = 'sawtooth';
+                osc.frequency.setValueAtTime(200, ctx.currentTime);
+                osc.frequency.exponentialRampToValueAtTime(30, ctx.currentTime + 0.5);
+                gain.gain.setValueAtTime(0.45, ctx.currentTime);
+                gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.55);
+                osc.connect(gain);
+                gain.connect(ctx.destination);
+                osc.start();
+                osc.stop(ctx.currentTime + 0.55);
+            } catch (e) { }
+        }
+        function sfxFanfare() {
+            [440, 554, 659, 880, 1108].forEach((f, idx) => {
+                setTimeout(() => playTone(f, 'sine', 0.3, 0.2), idx * 110);
+            });
+        }
+
+        // --- 2. 48 COUNTRIES (EXACT MARBLE SIZE MATCHING SCREENSHOT) ---
+        const COUNTRIES_DB = [
+            { name: "China", code: "CHN", flag: "🇨🇳", type: "china", primary: "#DE2910", sec: "#FFDE00" },
+            { name: "Sri Lanka", code: "LKA", flag: "🇱🇰", type: "srilanka", primary: "#8D1B3D", sec: "#FFBE29" },
+            { name: "Singapore", code: "SGP", flag: "🇸🇬", type: "singapore", primary: "#ED2939", sec: "#FFFFFF" },
+            { name: "India", code: "IND", flag: "🇮🇳", type: "india", primary: "#FF9933", sec: "#138808" },
+            { name: "Argentina", code: "ARG", flag: "🇦🇷", type: "argentina", primary: "#75AADB", sec: "#FFFFFF" },
+            { name: "Portugal", code: "PRT", flag: "🇵🇹", type: "portugal", primary: "#006600", sec: "#FF0000" },
+            { name: "Brazil", code: "BRA", flag: "🇧🇷", type: "brazil", primary: "#009C3B", sec: "#FFDF00" },
+            { name: "USA", code: "USA", flag: "🇺🇸", type: "usa", primary: "#B22234", sec: "#3C3B6E" },
+            { name: "UK", code: "GBR", flag: "🇬🇧", type: "uk", primary: "#012169", sec: "#C8102E" },
+            { name: "France", code: "FRA", flag: "🇫🇷", type: "v-tricolor", primary: "#002654", mid: "#FFFFFF", sec: "#ED2939" },
+            { name: "Germany", code: "DEU", flag: "🇩🇪", type: "h-tricolor", primary: "#000000", mid: "#DD0000", sec: "#FFCE00" },
+            { name: "Japan", code: "JPN", flag: "🇯🇵", type: "japan", primary: "#FFFFFF", sec: "#BC002D" },
+            { name: "Canada", code: "CAN", flag: "🇨🇦", type: "canada", primary: "#FF0000", sec: "#FFFFFF" },
+            { name: "Spain", code: "ESP", flag: "🇪🇸", type: "spain", primary: "#AA151B", sec: "#F1BF00" },
+            { name: "South Africa", code: "ZAF", flag: "🇿🇦", type: "southafrica", primary: "#007A4D", sec: "#DE3831" },
+            { name: "Australia", code: "AUS", flag: "🇦🇺", type: "australia", primary: "#00008B", sec: "#FF0000" },
+            { name: "Italy", code: "ITA", flag: "🇮🇹", type: "v-tricolor", primary: "#008C45", mid: "#FFFFFF", sec: "#CD212A" },
+            { name: "Turkey", code: "TUR", flag: "🇹🇷", type: "turkey", primary: "#E30A17", sec: "#FFFFFF" },
+            { name: "South Korea", code: "KOR", flag: "🇰🇷", type: "korea", primary: "#FFFFFF", sec: "#CD2E3A" },
+            { name: "Mexico", code: "MEX", flag: "🇲🇽", type: "v-tricolor", primary: "#006847", mid: "#FFFFFF", sec: "#CE1126" },
+            { name: "Netherlands", code: "NLD", flag: "🇳🇱", type: "h-tricolor", primary: "#AE1C28", mid: "#FFFFFF", sec: "#21468B" },
+            { name: "Sweden", code: "SWE", flag: "🇸🇪", type: "nordic", primary: "#006AA7", sec: "#FECC00" },
+            { name: "Norway", code: "NOR", flag: "🇳🇴", type: "nordic-double", primary: "#BA0C2F", mid: "#FFFFFF", sec: "#00205B" },
+            { name: "Egypt", code: "EGY", flag: "🇪🇬", type: "h-tricolor", primary: "#C8102E", mid: "#FFFFFF", sec: "#000000" },
+            { name: "Pakistan", code: "PAK", flag: "🇵🇰", type: "pakistan", primary: "#115740", sec: "#FFFFFF" },
+            { name: "Bangladesh", code: "BGD", flag: "🇧🇩", type: "bangladesh", primary: "#006A4E", sec: "#F42A41" },
+            { name: "Vietnam", code: "VNM", flag: "🇻🇳", type: "vietnam", primary: "#DA251D", sec: "#FFFF00" },
+            { name: "Colombia", code: "COL", flag: "🇨🇴", type: "colombia", primary: "#FCD116", mid: "#003893", sec: "#CE1126" },
+            { name: "Poland", code: "POL", flag: "🇵🇱", type: "h-bicolor", primary: "#FFFFFF", sec: "#DC143C" },
+            { name: "Ukraine", code: "UKR", flag: "🇺🇦", type: "h-bicolor", primary: "#0057B7", sec: "#FFDD00" },
+            { name: "Switzerland", code: "CHE", flag: "🇨🇭", type: "swiss", primary: "#DA291C", sec: "#FFFFFF" },
+            { name: "Nigeria", code: "NGA", flag: "🇳🇬", type: "v-tricolor", primary: "#008751", mid: "#FFFFFF", sec: "#008751" },
+            { name: "Thailand", code: "THA", flag: "🇹🇭", type: "thailand", primary: "#A51931", mid: "#2D2A4A", sec: "#FFFFFF" },
+            { name: "Saudi Arabia", code: "SAU", flag: "🇸🇦", type: "solid-symbol", primary: "#006C35", sec: "#FFFFFF", sym: "🇸🇦" },
+            { name: "Morocco", code: "MAR", flag: "🇲🇦", type: "solid-symbol", primary: "#C1272D", sec: "#006233", sym: "★" },
+            { name: "Ghana", code: "GHA", flag: "🇬🇭", type: "h-tricolor", primary: "#D31034", mid: "#FFD100", sec: "#006B3F" },
+            { name: "Czechia", code: "CZE", flag: "🇨🇿", type: "czech", primary: "#D7141A", sec: "#FFFFFF", wedge: "#11457E" },
+            { name: "Indonesia", code: "IDN", flag: "🇮🇩", type: "h-bicolor", primary: "#FF0000", sec: "#FFFFFF" },
+            { name: "Syria", code: "SYR", flag: "🇸🇾", type: "h-tricolor", primary: "#CE1126", mid: "#FFFFFF", sec: "#000000" },
+            { name: "Iran", code: "IRN", flag: "🇮🇷", type: "h-tricolor", primary: "#239F40", mid: "#FFFFFF", sec: "#DA0000" },
+            { name: "Bolivia", code: "BOL", flag: "🇧🇴", type: "h-tricolor", primary: "#D52B1E", mid: "#FCD116", sec: "#007934" },
+            { name: "Tunisia", code: "TUN", flag: "🇹🇳", type: "tunisia", primary: "#E70013", sec: "#FFFFFF" },
+            { name: "Chile", code: "CHL", flag: "🇨🇱", type: "chile", primary: "#0039A6", mid: "#FFFFFF", sec: "#D52B1E" },
+            { name: "Ireland", code: "IRL", flag: "🇮🇪", type: "v-tricolor", primary: "#169B62", mid: "#FFFFFF", sec: "#FF883E" },
+            { name: "Ethiopia", code: "ETH", flag: "🇪🇹", type: "h-tricolor", primary: "#078930", mid: "#FCDD09", sec: "#DA121A" },
+            { name: "Bulgaria", code: "BGR", flag: "🇧🇬", type: "h-tricolor", primary: "#FFFFFF", mid: "#00966E", sec: "#D62612" },
+            { name: "Peru", code: "PER", flag: "🇵🇪", type: "v-tricolor", primary: "#D91023", mid: "#FFFFFF", sec: "#D91023" },
+            { name: "Dominican Rep", code: "DOM", flag: "🇩🇴", type: "dominican", primary: "#002F6C", sec: "#CE1126" }
+        ];
+
+        // --- 3. CANVAS & EXACT VISUAL OBSTACLES ---
+        const canvas = document.getElementById('arenaCanvas');
+        const ctx = canvas.getContext('2d');
+
+        const CANVAS_SIZE = 380;
+        const CENTER_X = CANVAS_SIZE / 2;
+        const CENTER_Y = CANVAS_SIZE / 2;
+        const ARENA_RADIUS = 175;     // Outer circular neon boundary
+        const CENTER_RING_RADIUS = 46; // Gold rimmed center ring from screenshot
+        
+        // Exact size matching user reference: ~15.5px ball radius
+        const BALL_RADIUS = 15.5;
+
+        // 6 Radial Purple Obstacle Bars matching screenshot
+        const OBSTACLE_BARS = [];
+        const NUM_BARS = 6;
+        for (let i = 0; i < NUM_BARS; i++) {
+            const angle = (i / NUM_BARS) * Math.PI * 2 + 0.15;
+            // Bars project inwards from outer wall
+            const startDist = ARENA_RADIUS - 12;
+            const endDist = ARENA_RADIUS - 78;
+            OBSTACLE_BARS.push({
+                x1: CENTER_X + Math.cos(angle) * startDist,
+                y1: CENTER_Y + Math.sin(angle) * startDist,
+                x2: CENTER_X + Math.cos(angle) * endDist,
+                y2: CENTER_Y + Math.sin(angle) * endDist,
+                width: 9.5
+            });
+        }
+
+        let balls = [];
+        let eliminatedList = [];
+        let particles = [];
+        let shockwaves = [];
+        let supportStats = {};
+        let isPaused = false;
+        let autoChatActive = true;
+        let autoChatInterval = null;
+        let roundNumber = 1;
+
+        // Strict 5-Second Elimination
+        const ROUND_DURATION = 5.0;
+        let countdownTimer = ROUND_DURATION;
+        let lastFrameTimestamp = performance.now();
+        let lastSecondBeep = 5;
+
+        // Strict 1-Second Elimination Banner
+        let bannerActive = false;
+        let bannerRemaining = 0;
+        const BANNER_DURATION = 1.0;
+
+        // Draw crisp flag onto ball
+        function drawVectorFlag(ctx, r, c) {
+            ctx.save();
+            ctx.beginPath();
+            ctx.arc(0, 0, r, 0, Math.PI * 2);
+            ctx.clip();
+
+            switch (c.type) {
+                case 'china':
+                    ctx.fillStyle = "#DE2910";
+                    ctx.fillRect(-r, -r, r * 2, r * 2);
+                    ctx.fillStyle = "#FFDE00";
+                    ctx.font = `bold ${r * 0.75}px Arial`;
+                    ctx.textAlign = "center";
+                    ctx.textBaseline = "middle";
+                    ctx.fillText("★", -r * 0.35, -r * 0.35);
+                    break;
+
+                case 'india':
+                    ctx.fillStyle = "#FF9933";
+                    ctx.fillRect(-r, -r, r * 2, r * 0.67);
+                    ctx.fillStyle = "#FFFFFF";
+                    ctx.fillRect(-r, -r * 0.33, r * 2, r * 0.67);
+                    ctx.fillStyle = "#138808";
+                    ctx.fillRect(-r, r * 0.34, r * 2, r * 0.67);
+                    ctx.strokeStyle = "#000080";
+                    ctx.lineWidth = 1.3;
+                    ctx.beginPath();
+                    ctx.arc(0, 0, r * 0.28, 0, Math.PI * 2);
+                    ctx.stroke();
+                    break;
+
+                case 'brazil':
+                    ctx.fillStyle = "#009C3B";
+                    ctx.fillRect(-r, -r, r * 2, r * 2);
+                    ctx.fillStyle = "#FFDF00";
+                    ctx.beginPath();
+                    ctx.moveTo(0, -r * 0.75);
+                    ctx.lineTo(r * 0.8, 0);
+                    ctx.lineTo(0, r * 0.75);
+                    ctx.lineTo(-r * 0.8, 0);
+                    ctx.closePath();
+                    ctx.fill();
+                    ctx.fillStyle = "#002776";
+                    ctx.beginPath();
+                    ctx.arc(0, 0, r * 0.38, 0, Math.PI * 2);
+                    ctx.fill();
+                    break;
+
+                case 'argentina':
+                    ctx.fillStyle = "#75AADB";
+                    ctx.fillRect(-r, -r, r * 2, r * 2);
+                    ctx.fillStyle = "#FFFFFF";
+                    ctx.fillRect(-r, -r * 0.33, r * 2, r * 0.67);
+                    ctx.fillStyle = "#F6B40E";
+                    ctx.beginPath();
+                    ctx.arc(0, 0, r * 0.24, 0, Math.PI * 2);
+                    ctx.fill();
+                    break;
+
+                case 'japan':
+                    ctx.fillStyle = "#FFFFFF";
+                    ctx.fillRect(-r, -r, r * 2, r * 2);
+                    ctx.fillStyle = "#BC002D";
+                    ctx.beginPath();
+                    ctx.arc(0, 0, r * 0.5, 0, Math.PI * 2);
+                    ctx.fill();
+                    break;
+
+                case 'usa':
+                    for (let s = 0; s < 7; s++) {
+                        ctx.fillStyle = (s % 2 === 0) ? "#B22234" : "#FFFFFF";
+                        ctx.fillRect(-r, -r + s * (r * 2 / 7), r * 2, r * 2 / 7);
+                    }
+                    ctx.fillStyle = "#3C3B6E";
+                    ctx.fillRect(-r, -r, r * 0.95, r * 0.95);
+                    ctx.fillStyle = "#FFFFFF";
+                    ctx.font = `bold ${r * 0.5}px Arial`;
+                    ctx.textAlign = "center";
+                    ctx.textBaseline = "middle";
+                    ctx.fillText("★", -r * 0.48, -r * 0.48);
+                    break;
+
+                case 'uk':
+                    ctx.fillStyle = "#012169";
+                    ctx.fillRect(-r, -r, r * 2, r * 2);
+                    ctx.strokeStyle = "#FFFFFF";
+                    ctx.lineWidth = r * 0.45;
+                    ctx.beginPath();
+                    ctx.moveTo(-r, -r); ctx.lineTo(r, r);
+                    ctx.moveTo(r, -r); ctx.lineTo(-r, r);
+                    ctx.stroke();
+                    ctx.strokeStyle = "#C8102E";
+                    ctx.lineWidth = r * 0.2;
+                    ctx.beginPath();
+                    ctx.moveTo(-r, -r); ctx.lineTo(r, r);
+                    ctx.moveTo(r, -r); ctx.lineTo(-r, r);
+                    ctx.stroke();
+                    ctx.strokeStyle = "#FFFFFF";
+                    ctx.lineWidth = r * 0.6;
+                    ctx.beginPath();
+                    ctx.moveTo(0, -r); ctx.lineTo(0, r);
+                    ctx.moveTo(-r, 0); ctx.lineTo(r, 0);
+                    ctx.stroke();
+                    ctx.strokeStyle = "#C8102E";
+                    ctx.lineWidth = r * 0.32;
+                    ctx.beginPath();
+                    ctx.moveTo(0, -r); ctx.lineTo(0, r);
+                    ctx.moveTo(-r, 0); ctx.lineTo(r, 0);
+                    ctx.stroke();
+                    break;
+
+                case 'thailand':
+                    ctx.fillStyle = "#A51931";
+                    ctx.fillRect(-r, -r, r * 2, r * 2);
+                    ctx.fillStyle = "#FFFFFF";
+                    ctx.fillRect(-r, -r * 0.6, r * 2, r * 1.2);
+                    ctx.fillStyle = "#2D2A4A";
+                    ctx.fillRect(-r, -r * 0.3, r * 2, r * 0.6);
+                    break;
+
+                case 'czech':
+                    ctx.fillStyle = c.sec;
+                    ctx.fillRect(-r, -r, r * 2, r);
+                    ctx.fillStyle = c.primary;
+                    ctx.fillRect(-r, 0, r * 2, r);
+                    ctx.fillStyle = c.wedge;
+                    ctx.beginPath();
+                    ctx.moveTo(-r, -r);
+                    ctx.lineTo(0, 0);
+                    ctx.lineTo(-r, r);
+                    ctx.closePath();
+                    ctx.fill();
+                    break;
+
+                case 'swiss':
+                    ctx.fillStyle = "#DA291C";
+                    ctx.fillRect(-r, -r, r * 2, r * 2);
+                    ctx.fillStyle = "#FFFFFF";
+                    ctx.fillRect(-r * 0.2, -r * 0.6, r * 0.4, r * 1.2);
+                    ctx.fillRect(-r * 0.6, -r * 0.2, r * 1.2, r * 0.4);
+                    break;
+
+                case 'h-tricolor':
+                    ctx.fillStyle = c.primary;
+                    ctx.fillRect(-r, -r, r * 2, r * 0.67);
+                    ctx.fillStyle = c.mid;
+                    ctx.fillRect(-r, -r * 0.33, r * 2, r * 0.67);
+                    ctx.fillStyle = c.sec;
+                    ctx.fillRect(-r, r * 0.34, r * 2, r * 0.67);
+                    break;
+
+                case 'v-tricolor':
+                    ctx.fillStyle = c.primary;
+                    ctx.fillRect(-r, -r, r * 0.67, r * 2);
+                    ctx.fillStyle = c.mid;
+                    ctx.fillRect(-r * 0.33, -r, r * 0.67, r * 2);
+                    ctx.fillStyle = c.sec;
+                    ctx.fillRect(r * 0.34, -r, r * 0.67, r * 2);
+                    break;
+
+                case 'h-bicolor':
+                    ctx.fillStyle = c.primary;
+                    ctx.fillRect(-r, -r, r * 2, r);
+                    ctx.fillStyle = c.sec;
+                    ctx.fillRect(-r, 0, r * 2, r);
+                    break;
+
+                case 'solid-symbol':
+                    ctx.fillStyle = c.primary;
+                    ctx.fillRect(-r, -r, r * 2, r * 2);
+                    ctx.fillStyle = c.sec;
+                    ctx.font = `${r * 0.9}px sans-serif`;
+                    ctx.textAlign = "center";
+                    ctx.textBaseline = "middle";
+                    ctx.fillText(c.sym, 0, 0);
+                    break;
+
+                default:
+                    ctx.fillStyle = c.primary;
+                    ctx.fillRect(-r, -r, r * 2, r);
+                    ctx.fillStyle = c.sec;
+                    ctx.fillRect(-r, 0, r * 2, r);
+                    ctx.font = `${r * 0.85}px sans-serif`;
+                    ctx.textAlign = "center";
+                    ctx.textBaseline = "middle";
+                    ctx.fillText(c.flag, 0, 0);
+                    break;
+            }
+
+            // High Gloss Sphere Sheen
+            const gloss = ctx.createLinearGradient(-r, -r, r, r);
+            gloss.addColorStop(0, "rgba(255, 255, 255, 0.6)");
+            gloss.addColorStop(0.3, "rgba(255, 255, 255, 0.1)");
+            gloss.addColorStop(0.7, "rgba(0, 0, 0, 0.05)");
+            gloss.addColorStop(1, "rgba(0, 0, 0, 0.5)");
+            ctx.fillStyle = gloss;
+            ctx.beginPath();
+            ctx.arc(0, 0, r, 0, Math.PI * 2);
+            ctx.fill();
+
+            ctx.restore();
+        }
+
+        // Initialize Balls with SLOW gentle gliding speeds
+        function initBalls() {
+            balls = [];
+            eliminatedList = [];
+            particles = [];
+            shockwaves = [];
+            countdownTimer = ROUND_DURATION;
+            lastSecondBeep = 5;
+            bannerActive = false;
+            bannerRemaining = 0;
+            document.getElementById('elimBannerContainer').classList.add('hidden');
+
+            supportStats = {};
+            COUNTRIES_DB.forEach(c => {
+                supportStats[c.name] = Math.floor(Math.random() * 12) + 2;
+            });
+
+            COUNTRIES_DB.forEach((country, index) => {
+                // Distribute evenly across arena
+                const angle = (index / COUNTRIES_DB.length) * Math.PI * 2;
+                const distance = 58 + Math.random() * (ARENA_RADIUS - 85);
+                const x = CENTER_X + Math.cos(angle) * distance;
+                const y = CENTER_Y + Math.sin(angle) * distance;
+
+                // SLOW VELOCITY: 0.7 - 1.2 pixels/sec for smooth gliding
+                const slowSpeed = 0.75 + Math.random() * 0.6;
+                const moveAngle = Math.random() * Math.PI * 2;
+
+                balls.push({
+                    id: index,
+                    country: country,
+                    x: x,
+                    y: y,
+                    vx: Math.cos(moveAngle) * slowSpeed,
+                    vy: Math.sin(moveAngle) * slowSpeed,
+                    radius: BALL_RADIUS,
+                    mass: 1,
+                    shieldTime: 0
+                });
+            });
+
+            updateHUD();
+        }
+
+        // Helper: Closest point on line segment for obstacle collision
+        function getClosestPointOnSegment(p, a, b) {
+            const ab = { x: b.x - a.x, y: b.y - a.y };
+            const ap = { x: p.x - a.x, y: p.y - a.y };
+            const abLenSq = ab.x * ab.x + ab.y * ab.y;
+            let t = (ap.x * ab.x + ap.y * ab.y) / (abLenSq || 1);
+            t = Math.max(0, Math.min(1, t));
+            return { x: a.x + ab.x * t, y: a.y + ab.y * t };
+        }
+
+        // --- 4. SMOOTH SLOW MOTION PHYSICS ---
+        function updatePhysics(dt) {
+            if (isPaused || balls.length <= 1) return;
+
+            // 1-Second Banner Countdown
+            if (bannerActive) {
+                bannerRemaining -= dt;
+                const percent = Math.max(0, (bannerRemaining / BANNER_DURATION) * 100);
+                document.getElementById('elimProgressBar').style.width = `${percent}%`;
+                document.getElementById('elimTimerText').innerText = `${Math.max(0, bannerRemaining).toFixed(1)}s`;
+
+                if (bannerRemaining <= 0) {
+                    bannerActive = false;
+                    document.getElementById('elimBannerContainer').classList.add('hidden');
+                }
+            }
+
+            // 5-Second Round Countdown
+            countdownTimer -= dt;
+            if (countdownTimer < 0) countdownTimer = 0;
+
+            const remainingFloor = Math.ceil(countdownTimer);
+            if (remainingFloor !== lastSecondBeep && remainingFloor >= 1 && remainingFloor <= 5) {
+                lastSecondBeep = remainingFloor;
+                if (remainingFloor <= 2) sfxUrgentTick();
+                else sfxTick();
+            }
+
+            // Identify ball closest to or inside center ring
+            let closestBall = null;
+            let closestDist = Infinity;
+            balls.forEach(ball => {
+                const distToCenter = Math.hypot(ball.x - CENTER_X, ball.y - CENTER_Y);
+                if (distToCenter < closestDist) {
+                    closestDist = distToCenter;
+                    closestBall = ball;
+                }
+            });
+
+            // Target HUD display
+            const targetHUD = document.getElementById('dangerTargetText');
+            if (closestBall) {
+                const inRing = closestDist <= CENTER_RING_RADIUS ? ' (INSIDE RING!)' : '';
+                targetHUD.innerHTML = `Target: <span class="text-rose-400 font-extrabold">${closestBall.country.name}</span>${inRing}`;
+            } else {
+                targetHUD.innerText = 'Target: NONE';
+            }
+
+            // 5-SECOND TRIGGER: ELIMINATE 1 BALL
+            if (countdownTimer <= 0) {
+                executeSingleElimination(closestBall);
+                countdownTimer = ROUND_DURATION;
+                lastSecondBeep = 5;
+            }
+
+            // UPDATE BALL POSITIONS (Smooth & Slow Motion)
+            for (let i = 0; i < balls.length; i++) {
+                const b = balls[i];
+
+                if (b.shieldTime > 0) {
+                    b.shieldTime -= dt;
+                    if (b.shieldTime < 0) b.shieldTime = 0;
+                }
+
+                // Very gentle drift towards center
+                const dxCenter = CENTER_X - b.x;
+                const dyCenter = CENTER_Y - b.y;
+                const distCenter = Math.hypot(dxCenter, dyCenter) || 1;
+                
+                // Very small inward gravitation for graceful floating
+                const slowGravity = 0.22;
+                b.vx += (dxCenter / distCenter) * slowGravity * dt;
+                b.vy += (dyCenter / distCenter) * slowGravity * dt;
+
+                // Air Damping to prevent fast speeds
+                b.vx *= 0.992;
+                b.vy *= 0.992;
+
+                // Velocity Cap (Maximum speed is strictly capped to keep motion slow)
+                const currentSpeed = Math.hypot(b.vx, b.vy);
+                const MAX_SLOW_SPEED = 1.6;
+                const MIN_SLOW_SPEED = 0.5;
+
+                if (currentSpeed > MAX_SLOW_SPEED) {
+                    b.vx = (b.vx / currentSpeed) * MAX_SLOW_SPEED;
+                    b.vy = (b.vy / currentSpeed) * MAX_SLOW_SPEED;
+                } else if (currentSpeed < MIN_SLOW_SPEED) {
+                    b.vx = (b.vx / (currentSpeed || 1)) * MIN_SLOW_SPEED;
+                    b.vy = (b.vy / (currentSpeed || 1)) * MIN_SLOW_SPEED;
+                }
+
+                // Update position
+                b.x += b.vx * 60 * dt;
+                b.y += b.vy * 60 * dt;
+
+                // 1. BOUNCE OFF OUTER ARENA CIRCLE
+                const distFromCenter = Math.hypot(b.x - CENTER_X, b.y - CENTER_Y);
+                const maxAllowedDist = ARENA_RADIUS - b.radius;
+                if (distFromCenter > maxAllowedDist) {
+                    const nx = (CENTER_X - b.x) / distFromCenter;
+                    const ny = (CENTER_Y - b.y) / distFromCenter;
+
+                    b.x = CENTER_X - nx * maxAllowedDist;
+                    b.y = CENTER_Y - ny * maxAllowedDist;
+
+                    const dot = b.vx * nx + b.vy * ny;
+                    b.vx = (b.vx - 2 * dot * nx) * 0.85;
+                    b.vy = (b.vy - 2 * dot * ny) * 0.85;
+
+                    if (Math.random() < 0.15) sfxBounce();
+                }
+
+                // 2. BOUNCE OFF 6 RADIAL PURPLE OBSTACLE BARS
+                OBSTACLE_BARS.forEach(bar => {
+                    const segA = { x: bar.x1, y: bar.y1 };
+                    const segB = { x: bar.x2, y: bar.y2 };
+                    const closestP = getClosestPointOnSegment(b, segA, segB);
+                    const distToBar = Math.hypot(b.x - closestP.x, b.y - closestP.y);
+                    const minDist = b.radius + bar.width * 0.5;
+
+                    if (distToBar < minDist && distToBar > 0) {
+                        const nx = (b.x - closestP.x) / distToBar;
+                        const ny = (b.y - closestP.y) / distToBar;
+                        b.x = closestP.x + nx * minDist;
+                        b.y = closestP.y + ny * minDist;
+
+                        const dot = b.vx * nx + b.vy * ny;
+                        b.vx = (b.vx - 2 * dot * nx) * 0.85;
+                        b.vy = (b.vy - 2 * dot * ny) * 0.85;
+
+                        if (Math.random() < 0.12) sfxBounce();
+                    }
+                });
+
+                // 3. SMOOTH BALL-TO-BALL ELASTIC COLLISIONS
+                for (let j = i + 1; j < balls.length; j++) {
+                    const b2 = balls[j];
+                    const cdx = b2.x - b.x;
+                    const cdy = b2.y - b.y;
+                    const distB = Math.hypot(cdx, cdy);
+                    const minDist = b.radius + b2.radius;
+
+                    if (distB < minDist && distB > 0) {
+                        const nx = cdx / distB;
+                        const ny = cdy / distB;
+
+                        const overlap = 0.5 * (minDist - distB);
+                        b.x -= nx * overlap;
+                        b.y -= ny * overlap;
+                        b2.x += nx * overlap;
+                        b2.y += ny * overlap;
+
+                        const kx = b.vx - b2.vx;
+                        const ky = b.vy - b2.vy;
+                        const p = 2 * (nx * kx + ny * ky) / (b.mass + b2.mass);
+
+                        b.vx -= p * b2.mass * nx * 0.88;
+                        b.vy -= p * b2.mass * ny * 0.88;
+                        b2.vx += p * b.mass * nx * 0.88;
+                        b2.vy += p * b.mass * ny * 0.88;
+
+                        if (Math.random() < 0.08) sfxBounce();
+                    }
+                }
+            }
+
+            // Particles
+            for (let i = particles.length - 1; i >= 0; i--) {
+                const p = particles[i];
+                p.x += p.vx * 60 * dt;
+                p.y += p.vy * 60 * dt;
+                p.life -= dt * 1.5;
+                if (p.life <= 0) particles.splice(i, 1);
+            }
+
+            // Shockwaves
+            for (let i = shockwaves.length - 1; i >= 0; i--) {
+                const s = shockwaves[i];
+                s.r += s.speed * 60 * dt;
+                s.alpha -= dt * 2.0;
+                if (s.alpha <= 0) shockwaves.splice(i, 1);
+            }
+        }
+
+        // --- 5. STRICT SINGLE ELIMINATION & 3-SECOND BANNER ---
+        function executeSingleElimination(targetBall) {
+            if (!targetBall || balls.length <= 1) return;
+
+            // If country was shielded by chat
+            if (targetBall.shieldTime > 0) {
+                targetBall.shieldTime = 0;
+                const angle = Math.atan2(targetBall.y - CENTER_Y, targetBall.x - CENTER_X);
+                targetBall.vx = Math.cos(angle) * 3.2;
+                targetBall.vy = Math.sin(angle) * 3.2;
+
+                sfxShield();
+                createShockwave(targetBall.x, targetBall.y, '#00ffff');
+                return;
+            }
+
+            // Remove only this one ball
+            const index = balls.indexOf(targetBall);
+            if (index !== -1) {
+                balls.splice(index, 1);
+                eliminatedList.push(targetBall);
+            }
+
+            // Screen shake
+            const frame = document.getElementById('streamFrame');
+            frame.classList.add('shake-active');
+            setTimeout(() => frame.classList.remove('shake-active'), 400);
+
+            // Explosion FX
+            sfxExplosion();
+            spawnExplosionParticles(targetBall.x, targetBall.y, targetBall.country.primary, 35);
+            createShockwave(targetBall.x, targetBall.y, '#ff0055');
+            createShockwave(CENTER_X, CENTER_Y, '#ffd700');
+
+            // 3-SECOND ELIMINATION BANNER
+            displayEliminationBanner(targetBall.country);
+
+            roundNumber++;
+            document.getElementById('roundCounter').innerText = roundNumber;
+            updateHUD();
+
+            if (balls.length === 1) {
+                setTimeout(() => triggerVictory(balls[0]), 1000);
+            }
+        }
+
+        function displayEliminationBanner(country) {
+            const banner = document.getElementById('elimBannerContainer');
+            document.getElementById('elimCountryName').innerText = country.name;
+            document.getElementById('elimCountryFlag').innerText = country.flag;
             
-            // இமேஜ் அளவை 0.35 (35%) ஆகக் குறைத்துள்ளேன்
-            const imageDims = waterMarkImage.scale(0.35); 
+            banner.classList.remove('hidden');
+            bannerRemaining = BANNER_DURATION;
+            bannerActive = true;
+        }
 
-            for (let i = 0; i < pages.length; i++) {
-                const page = pages[i];
-                const { width, height } = page.getSize();
-
-                page.drawImage(waterMarkImage, {
-                    x: width / 2 - imageDims.width / 2, 
-                    y: height / 2 - imageDims.height / 2,
-                    width: imageDims.width,
-                    height: imageDims.height,
-                    opacity: 0.15, // டிரான்ஸ்பரன்சி அளவை 0.15 ஆகக் குறைத்துள்ளேன் (மிகவும் லேசாகத் தெரியும்)
+        function spawnExplosionParticles(x, y, color, count = 30) {
+            for (let i = 0; i < count; i++) {
+                const angle = Math.random() * Math.PI * 2;
+                const speed = 1.5 + Math.random() * 5;
+                particles.push({
+                    x: x,
+                    y: y,
+                    vx: Math.cos(angle) * speed,
+                    vy: Math.sin(angle) * speed,
+                    color: color,
+                    size: 2.5 + Math.random() * 4,
+                    life: 1.0
                 });
             }
-
-            const pdfBytes = await pdfDoc.save();
-
-            const blob = new Blob([pdfBytes], { type: "application/pdf" });
-            const link = document.createElement('a');
-            link.href = URL.createObjectURL(blob);
-            link.download = "fixed_watermarked_" + pdfFile.name;
-            link.click();
-
-            statusDiv.innerHTML = "வெற்றிகரமாக வாட்டர்மார்க் சேர்க்கப்பட்டு டவுன்லோட் செய்யப்பட்டது! 🎉";
-            statusDiv.className = 'success';
-
-        } catch (error) {
-            console.error(error);
-            statusDiv.innerHTML = "ஏதோ தவறு நடந்துவிட்டது. மீண்டும் முயற்சிக்கவும்!";
-            statusDiv.className = 'error';
-        } finally {
-            btn.disabled = false;
         }
-    }
-</script>
 
+        function createShockwave(x, y, color) {
+            shockwaves.push({
+                x: x,
+                y: y,
+                r: 8,
+                speed: 5.5,
+                color: color,
+                alpha: 1.0
+            });
+        }
+
+        // --- 6. RENDER ARENA MATCHING USER SCREENSHOT ---
+        function render() {
+            ctx.clearRect(0, 0, CANVAS_SIZE, CANVAS_SIZE);
+
+            // 1. Arena Dark Cosmic Base
+            ctx.save();
+            ctx.beginPath();
+            ctx.arc(CENTER_X, CENTER_Y, ARENA_RADIUS, 0, Math.PI * 2);
+            ctx.fillStyle = "#020713";
+            ctx.fill();
+
+            // Outer Neon Cyan Border matching image
+            ctx.lineWidth = 5;
+            ctx.strokeStyle = "#00d2ff";
+            ctx.shadowColor = "#00d2ff";
+            ctx.shadowBlur = 16;
+            ctx.stroke();
+            ctx.restore();
+
+            // 2. EXACT CENTER CIRCLE (Gold Border with Dark Blue/Purple fill from screenshot)
+            ctx.save();
+            ctx.beginPath();
+            ctx.arc(CENTER_X, CENTER_Y, CENTER_RING_RADIUS, 0, Math.PI * 2);
+            ctx.fillStyle = "rgba(42, 45, 95, 0.75)";
+            ctx.fill();
+
+            // Glowing Golden Ring from screenshot
+            ctx.lineWidth = 4;
+            ctx.strokeStyle = "#facc15"; // Tailwind yellow-400
+            ctx.shadowColor = "#eab308";
+            ctx.shadowBlur = 12;
+            ctx.stroke();
+
+            // Subtle rotating spoke effect in center disc
+            const rot = performance.now() * 0.0006;
+            ctx.lineWidth = 1;
+            ctx.strokeStyle = "rgba(250, 204, 21, 0.25)";
+            for (let a = 0; a < 4; a++) {
+                const ang = rot + (a / 4) * Math.PI * 2;
+                ctx.beginPath();
+                ctx.moveTo(CENTER_X, CENTER_Y);
+                ctx.lineTo(CENTER_X + Math.cos(ang) * CENTER_RING_RADIUS, CENTER_Y + Math.sin(ang) * CENTER_RING_RADIUS);
+                ctx.stroke();
+            }
+            ctx.restore();
+
+            // 3. 6 PURPLE RADIAL BAR OBSTACLES (Exact match from screenshot)
+            OBSTACLE_BARS.forEach(bar => {
+                ctx.save();
+                ctx.beginPath();
+                ctx.moveTo(bar.x1, bar.y1);
+                ctx.lineTo(bar.x2, bar.y2);
+                ctx.lineWidth = bar.width;
+                ctx.lineCap = "round";
+                // Purple color from reference screenshot: rgb(120, 115, 200)
+                ctx.strokeStyle = "#7b72c9";
+                ctx.shadowColor = "#6366f1";
+                ctx.shadowBlur = 8;
+                ctx.stroke();
+
+                // Inner highlight
+                ctx.lineWidth = 3;
+                ctx.strokeStyle = "#9d96e8";
+                ctx.stroke();
+                ctx.restore();
+            });
+
+            // 4. Shockwaves & Particles
+            shockwaves.forEach(s => {
+                ctx.save();
+                ctx.globalAlpha = Math.max(0, s.alpha);
+                ctx.beginPath();
+                ctx.arc(s.x, s.y, s.r, 0, Math.PI * 2);
+                ctx.lineWidth = 3;
+                ctx.strokeStyle = s.color;
+                ctx.stroke();
+                ctx.restore();
+            });
+
+            particles.forEach(p => {
+                ctx.save();
+                ctx.globalAlpha = Math.max(0, p.life);
+                ctx.fillStyle = p.color;
+                ctx.beginPath();
+                ctx.arc(p.x, p.y, p.size, 0, Math.PI * 2);
+                ctx.fill();
+                ctx.restore();
+            });
+
+            // 5. Target Laser line to candidate
+            let closestBall = null;
+            let closestDist = Infinity;
+            balls.forEach(b => {
+                const dist = Math.hypot(b.x - CENTER_X, b.y - CENTER_Y);
+                if (dist < closestDist) {
+                    closestDist = dist;
+                    closestBall = b;
+                }
+            });
+
+            if (closestBall && countdownTimer <= 2.0) {
+                ctx.save();
+                ctx.beginPath();
+                ctx.moveTo(CENTER_X, CENTER_Y);
+                ctx.lineTo(closestBall.x, closestBall.y);
+                ctx.strokeStyle = `rgba(255, 0, 70, ${0.4 + Math.sin(performance.now() * 0.02) * 0.4})`;
+                ctx.lineWidth = 2;
+                ctx.setLineDash([3, 3]);
+                ctx.stroke();
+                ctx.restore();
+            }
+
+            // 6. RENDER 48 SLOW-MOVING COUNTRY MARBLE BALLS
+            balls.forEach(ball => {
+                const isTarget = (ball === closestBall);
+
+                ctx.save();
+                ctx.translate(ball.x, ball.y);
+
+                // Danger glow if closest
+                if (isTarget) {
+                    ctx.beginPath();
+                    ctx.arc(0, 0, ball.radius + 4, 0, Math.PI * 2);
+                    ctx.strokeStyle = `rgba(255, 30, 60, ${0.75 + Math.sin(performance.now() * 0.015) * 0.25})`;
+                    ctx.lineWidth = 2.5;
+                    ctx.shadowColor = "#ff0033";
+                    ctx.shadowBlur = 10;
+                    ctx.stroke();
+                }
+
+                // Shield Bubble
+                if (ball.shieldTime > 0) {
+                    ctx.beginPath();
+                    ctx.arc(0, 0, ball.radius + 5, 0, Math.PI * 2);
+                    ctx.fillStyle = "rgba(0, 242, 255, 0.25)";
+                    ctx.fill();
+                    ctx.lineWidth = 2;
+                    ctx.strokeStyle = "#00f7ff";
+                    ctx.shadowColor = "#00f7ff";
+                    ctx.shadowBlur = 12;
+                    ctx.stroke();
+                }
+
+                // Vector Flag Texture
+                drawVectorFlag(ctx, ball.radius, ball.country);
+
+                // Thin crisp outer marble rim
+                ctx.beginPath();
+                ctx.arc(0, 0, ball.radius, 0, Math.PI * 2);
+                ctx.lineWidth = 1.5;
+                ctx.strokeStyle = isTarget ? "#ff3355" : "rgba(255, 255, 255, 0.85)";
+                ctx.stroke();
+
+                ctx.restore();
+            });
+        }
+
+        // --- 7. HUD & LEADERBOARDS ---
+        function updateHUD() {
+            document.getElementById('aliveCount').innerText = balls.length;
+            document.getElementById('totalCount').innerText = COUNTRIES_DB.length;
+            document.getElementById('elimCount').innerText = `${eliminatedList.length} Eliminated`;
+
+            const activeCountries = balls.map(b => b.country);
+            activeCountries.sort((a, b) => (supportStats[b.name] || 0) - (supportStats[a.name] || 0));
+            const top2 = activeCountries.slice(0, 2);
+
+            const supportEl = document.getElementById('supportList');
+            supportEl.innerHTML = top2.map((c, i) => `
+                <div class="flex items-center justify-between">
+                    <span class="flex items-center gap-1 font-bold truncate max-w-[85px]">
+                        <span class="text-yellow-400 font-black">#${i + 1}</span>
+                        <span>${c.flag}</span>
+                        <span class="truncate">${c.name}</span>
+                    </span>
+                    <span class="text-cyan-300 font-extrabold flex items-center gap-1">
+                        👍 ${supportStats[c.name] || 15}
+                    </span>
+                </div>
+            `).join('');
+        }
+
+        function triggerVictory(winnerBall) {
+            sfxFanfare();
+            const modal = document.getElementById('winnerModal');
+            document.getElementById('winnerCountryName').innerText = winnerBall.country.name;
+            document.getElementById('winnerFlagBadge').innerText = winnerBall.country.flag;
+            modal.classList.remove('hidden');
+            modal.classList.add('flex');
+        }
+
+        // --- 8. AUDIENCE COMMANDS ---
+        function applyActionToCountry(countryName, actionType) {
+            getAudioContext();
+            const query = countryName.trim().toLowerCase();
+            const ball = balls.find(b => 
+                b.country.name.toLowerCase() === query || 
+                b.country.code.toLowerCase() === query
+            );
+
+            if (ball) {
+                supportStats[ball.country.name] = (supportStats[ball.country.name] || 0) + 1;
+
+                if (actionType === 'shield') {
+                    ball.shieldTime = 3.5;
+                    sfxShield();
+                    createShockwave(ball.x, ball.y, '#00ffff');
+                } else if (actionType === 'boost') {
+                    // Push out gently away from center
+                    const angle = Math.atan2(ball.y - CENTER_Y, ball.x - CENTER_X);
+                    ball.vx = Math.cos(angle) * 2.8;
+                    ball.vy = Math.sin(angle) * 2.8;
+                    sfxBoost();
+                    spawnExplosionParticles(ball.x, ball.y, '#10b981', 12);
+                }
+                updateHUD();
+                return true;
+            }
+            return false;
+        }
+
+        // --- 9. INTERACTIVE LISTENERS ---
+        document.getElementById('btnShieldCmd').addEventListener('click', () => {
+            const input = document.getElementById('chatCmdInput');
+            if (input.value) {
+                applyActionToCountry(input.value, 'shield');
+                input.value = '';
+            }
+        });
+
+        document.getElementById('btnBoostCmd').addEventListener('click', () => {
+            const input = document.getElementById('chatCmdInput');
+            if (input.value) {
+                applyActionToCountry(input.value, 'boost');
+                input.value = '';
+            }
+        });
+
+        document.getElementById('chatCmdInput').addEventListener('keydown', (e) => {
+            if (e.key === 'Enter') {
+                const val = e.target.value.trim();
+                if (val) {
+                    applyActionToCountry(val, 'boost');
+                    e.target.value = '';
+                }
+            }
+        });
+
+        // Tap Ball directly
+        canvas.addEventListener('pointerdown', (e) => {
+            getAudioContext();
+            const rect = canvas.getBoundingClientRect();
+            const scale = CANVAS_SIZE / rect.width;
+            const clickX = (e.clientX - rect.left) * scale;
+            const clickY = (e.clientY - rect.top) * scale;
+
+            balls.forEach(ball => {
+                const dist = Math.hypot(ball.x - clickX, ball.y - clickY);
+                if (dist < ball.radius + 10) {
+                    applyActionToCountry(ball.country.name, 'boost');
+                }
+            });
+        });
+
+        document.getElementById('btnNudgeAll').addEventListener('click', () => {
+            getAudioContext();
+            sfxBoost();
+            balls.forEach(b => {
+                b.vx += (Math.random() - 0.5) * 1.5;
+                b.vy += (Math.random() - 0.5) * 1.5;
+            });
+        });
+
+        const pauseBtn = document.getElementById('btnPauseGame');
+        pauseBtn.addEventListener('click', () => {
+            isPaused = !isPaused;
+            pauseBtn.innerText = isPaused ? '▶️ Resume' : '⏸️ Pause';
+        });
+
+        const autoChatBtn = document.getElementById('btnToggleAutoChat');
+        function startAutoChat() {
+            autoChatInterval = setInterval(() => {
+                if (!isPaused && balls.length > 0) {
+                    const randomBall = balls[Math.floor(Math.random() * balls.length)];
+                    const action = Math.random() < 0.7 ? 'boost' : 'shield';
+                    applyActionToCountry(randomBall.country.name, action);
+                }
+            }, 2000);
+        }
+        startAutoChat();
+
+        autoChatBtn.addEventListener('click', () => {
+            autoChatActive = !autoChatActive;
+            if (autoChatActive) {
+                autoChatBtn.innerText = '🤖 Auto Chat: ON';
+                autoChatBtn.classList.remove('opacity-50');
+                startAutoChat();
+            } else {
+                autoChatBtn.innerText = '🤖 Auto Chat: OFF';
+                autoChatBtn.classList.add('opacity-50');
+                clearInterval(autoChatInterval);
+            }
+        });
+
+        document.getElementById('btnResetGame').addEventListener('click', initBalls);
+        document.getElementById('btnRestartRound').addEventListener('click', () => {
+            document.getElementById('winnerModal').classList.add('hidden');
+            document.getElementById('winnerModal').classList.remove('flex');
+            initBalls();
+        });
+
+        const soundBadge = document.getElementById('soundBadge');
+        soundBadge.addEventListener('click', () => {
+            getAudioContext();
+            soundMuted = !soundMuted;
+            soundBadge.innerText = soundMuted ? '🔇 SFX: OFF' : '🔊 SFX: ON';
+        });
+
+        // --- 10. ANIMATION LOOP ---
+        function gameLoop(currentTimestamp) {
+            const dt = Math.min((currentTimestamp - lastFrameTimestamp) / 1000, 0.1);
+            lastFrameTimestamp = currentTimestamp;
+
+            updatePhysics(dt);
+            render();
+
+            const formattedSec = countdownTimer.toFixed(2);
+            document.getElementById('countdownHUD').innerText = `${formattedSec}s`;
+
+            requestAnimationFrame(gameLoop);
+        }
+
+        window.onload = function() {
+            initBalls();
+            requestAnimationFrame(gameLoop);
+        };
+    </script>
 </body>
 </html>
